@@ -46,7 +46,7 @@ def process_data(data, template):
 
     file_output = "output_" + data
 
-    with open(NAME_BUFFER_FILE) as csv_file, open(file_output, "w") as out_csv_file:
+    with open(NAME_BUFFER_FILE) as csv_file, open(file_output, "w", newline="") as out_csv_file:
 
         csv_reader = list(csv.DictReader(csv_file))
         name_keys = list(csv_reader[0].keys())
@@ -74,25 +74,26 @@ def process_data(data, template):
                             row[sign] = templates[row[sign]]
 
                 if sign == "Comment":
-                    row[sign] = row[sign].replace(" ", "_")
+                    row[sign] = row[sign].replace(" ", "_").replace("\n", "")
 
                 if sign in row and sign == None:
-                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]] + row[sign][0]
+                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]] + row[sign][0].replace("\n", "")
                     row.pop(sign)
             proc_data.append(row.copy())
 
         csv_writer.writerows(proc_data)
 
-        try:
-            os.remove(NAME_BUFFER_FILE)
-        except Exception as err:
-            print(f"Cannot remove file {err}")
 
 
 def main():
     inpt = input("Input data: ")
     template = input("Input name template: ")
     process_data(inpt, template)
+
+    try:
+        os.remove(NAME_BUFFER_FILE)
+    except Exception as err:
+        print(f"Cannot remove file {err}")
 
 
 if __name__ == "__main__":
