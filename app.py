@@ -58,7 +58,7 @@ class App:
         )
 
     def _press_start(self):
-        name_save_dir = f"output-{str(datetime.datetime.now())}"
+        name_save_dir = f"output_{str(datetime.datetime.now())}".replace(":", ".")
         if self.template_file == "":
             self.info.insert(END, "Не выбран шаблон .txt!\n")
         elif self.processed_files == "":
