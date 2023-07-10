@@ -109,6 +109,8 @@ def process_csvfile(csvfile, template, name_save_dir):
 
         footprint_prev_top = ""
         footprint_prev_bot = ""
+        i = 0
+        j = 0
 
         for row in csv_reader:
             flag_top = False
@@ -123,6 +125,40 @@ def process_csvfile(csvfile, template, name_save_dir):
                             flag_del = True
                         else:
                             row[sign] = templates[row[sign]]
+                    elif TEMPLATE_REPEAT_1 in row[sign]:
+                        if row["Layer"] == "TopLayer":
+                            buffer_top = row[sign]
+                            if TEMPLATE_REPEAT_1 in footprint_prev_top:
+                                i += 1
+                                row[sign] = f"M{i}"
+                            else:
+                                i = 1
+                                row[sign] = f"M{i}"
+                        elif sign["Layer"] == "BottomLayer":
+                            buffer_bot = row[sign]
+                            if TEMPLATE_REPEAT_1 in footprint_prev_bot:
+                                j += 1
+                                row[sign] = f"M{i}"
+                            else:
+                                j = 1
+                                row[sign] = f"M{i}"
+                    elif TEMPLATE_REPEAT_2 in row[sign]:
+                        if row["Layer"] == "TopLayer":
+                            buffer_top = row[sign]
+                            if TEMPLATE_REPEAT_2 in footprint_prev_top:
+                                i += 1
+                                row[sign] = f"F{i}"
+                            else:
+                                i = 1
+                                row[sign] = f"F{i}"
+                        elif row["Layer"] == "BottomLayer":
+                            buffer_bot = row[sign]
+                            if TEMPLATE_REPEAT_2 in footprint_prev_bot:
+                                j += 1
+                                row[sign] = f"F{i}"
+                            else:
+                                j = 1
+                                row[sign] = f"F{i}"
                     else:
                         flag_del = True
 
@@ -131,10 +167,18 @@ def process_csvfile(csvfile, template, name_save_dir):
 
                 if sign == "Layer":
                     if row[sign] == "TopLayer" and not flag_del:
-                        footprint_prev_top = row["Footprint"]
+                        if buffer_top != "":
+                            footprint_prev_top = buffer_top
+                            buffer_top = ""
+                        else:
+                            footprint_prev_top = row["Footprint"]
                         flag_top = True
                     elif row[sign] == "BottomLayer" and not flag_del:
-                        footprint_prev_bot = row["Footprint"]
+                        if buffer_bot != "":
+                            footprint_prev_bot = buffer_bot
+                            buffer_bot = ""
+                        else:
+                            footprint_prev_bot = row["Footprint"]
                         flag_bot = True
                     row[sign] = templates[row[sign]]
 
@@ -157,6 +201,10 @@ def process_csvfile(csvfile, template, name_save_dir):
         csv_writer_bot.writerows(proc_data_bot)
         csv_writer_del.writerows(proc_data_del)
 
+        try:
+            os.remove(NAME_BUFFER_FILE)
+        except Exception as err:
+            print(f"Cannot remove buffer file {err}")
 
 def main():
     root = Tk()
