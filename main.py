@@ -2,11 +2,17 @@ import csv
 import datetime
 import os.path
 
-from new_app import *
+from app import *
 
 TEMPLATE_NAME_1 = "Designator"
-NAME_BUFFER_FILE = "temp.csv"
 TEMPLATE_NAME_2 = "~FV"
+
+TEMPLATE_REPEAT_1 = "MCS_WORK/MECH/"
+TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/"
+
+NAME_BUFFER_FILE = "temp.csv"
+
+
 SYMBOLS = ["\'", "\"", "\n"]
 
 
@@ -65,15 +71,18 @@ def process_csvfile(csvfile, template, name_save_dir):
     # get templates
     templates = get_templates(template)
 
-    name_top_file = f"{name_save_dir}/TOP_{csvfile}"
-    name_bot_file = f"{name_save_dir}/BOT_{csvfile}"
-    name_del_file = f"{name_save_dir}/DELETE_{csvfile}"
+    # create dir for save processed file
+    create_dir(name_save_dir)
+
+    name_csv_file = csvfile[csvfile.rfind("/") + 1:]
+    name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
+    name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
+    name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
 
     # app.info.insert(END, f"Созданы три файла для вывода обработанных значений:\n"
     #                      f" 1){name_top_file};\n"
     #                      f" 2){name_bot_file};\n"
     #                      f" 3){name_del_file}.")
-
 
     with open(NAME_BUFFER_FILE) as r_file,\
             open(name_top_file, "w", newline="") as top_file,\
@@ -98,16 +107,22 @@ def process_csvfile(csvfile, template, name_save_dir):
 
         name_keys.append(None)
 
-        flag_top = False
-        flag_bot = False
-        flag_del = False
+        footprint_prev_top = ""
+        footprint_prev_bot = ""
 
         for row in csv_reader:
+            flag_top = False
+            flag_bot = False
+            flag_del = False
+
             for sign in name_keys:
 
                 if sign == "Footprint":
                     if row[sign] in templates:
-                        row[sign] = templates[row[sign]]
+                        if templates[row[sign]] == "delete":
+                            flag_del = True
+                        else:
+                            row[sign] = templates[row[sign]]
                     else:
                         flag_del = True
 
@@ -116,29 +131,31 @@ def process_csvfile(csvfile, template, name_save_dir):
 
                 if sign == "Layer":
                     if row[sign] == "TopLayer" and not flag_del:
+                        footprint_prev_top = row["Footprint"]
                         flag_top = True
-                    elif row[sign] == "BotLayer" and not flag_del:
+                    elif row[sign] == "BottomLayer" and not flag_del:
+                        footprint_prev_bot = row["Footprint"]
                         flag_bot = True
                     row[sign] = templates[row[sign]]
 
                 if sign == "Comment":
                     row[sign] = row[sign].replace(" ", "_").replace("\n", "")
 
-                if sign in row and sign == None:
-                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]] + row[sign][0].replace("\n",
-                                                                                                                   "")
+                if sign in row and sign is None:
+                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]]\
+                                                         + row[sign][0].replace("\n", "")
                     row.pop(sign)
 
             if flag_bot:
-                proc_data_bot.append(row)
+                proc_data_bot.append(row.copy())
             elif flag_top:
-                proc_data_top.append(row)
+                proc_data_top.append(row.copy())
             elif flag_del:
                 proc_data_del.append(row.copy())
 
-        top_file.writerows(proc_data_top)
-        bot_file.writerows(proc_data_bot)
-        del_file.writerows(proc_data_top)
+        csv_writer_top.writerows(proc_data_top)
+        csv_writer_bot.writerows(proc_data_bot)
+        csv_writer_del.writerows(proc_data_del)
 
 
 def main():
