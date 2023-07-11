@@ -8,7 +8,8 @@ TEMPLATE_NAME_1 = "Designator"
 TEMPLATE_NAME_2 = "~FV"
 
 TEMPLATE_REPEAT_1 = "MCS_WORK/MECH/"
-TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/"
+TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/FIDUCIAL_MARK"
+# TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/"
 
 NAME_BUFFER_FILE = "temp.csv"
 
@@ -30,7 +31,6 @@ def preprocess_data(name_data):
                 #     # app.info.insert(END, "  Шапка до \"Designator\" удалена!\n")
                 # else:
                 #     # app.info.insert(END, "  В файле не была найдена шапка!\n")
-
             if flag:
                 if not(TEMPLATE_NAME_2 in line):
                     print(line.replace("\"", ""), file=temp, end="")
@@ -47,10 +47,11 @@ def get_templates(template):
     with open(template, "r") as file_t:
         lines = file_t.readlines()
         for l in lines:
-            for el in SYMBOLS:
-                l = l.replace(el, "")
-            l = l.split()
-            t.update({l[0]: l[1]})
+            if l != "\n":
+                for el in SYMBOLS:
+                    l = l.replace(el, "")
+                l = l.split()
+                t.update({l[0]: l[1]})
     return t
 
 
@@ -201,10 +202,11 @@ def process_csvfile(csvfile, template, name_save_dir):
         csv_writer_bot.writerows(proc_data_bot)
         csv_writer_del.writerows(proc_data_del)
 
-        try:
-            os.remove(NAME_BUFFER_FILE)
-        except Exception as err:
-            print(f"Cannot remove buffer file {err}")
+    try:
+        os.remove(NAME_BUFFER_FILE)
+    except Exception as err:
+        print(f"Cannot remove buffer file {err}")
+
 
 def main():
     root = Tk()
@@ -214,3 +216,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

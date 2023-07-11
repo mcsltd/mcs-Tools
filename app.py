@@ -44,7 +44,6 @@ class App:
         # scroll bar
         self.scroll.grid(row=0, rowspan=6, column=4, pady=1, sticky="wns")
 
-
     def _get_processed_files(self):
         self.processed_files = fd.askopenfilenames(
             title="Выберите файл(-ы) для обработки",
@@ -66,7 +65,11 @@ class App:
         else:
             self.info.insert(END, "Начало обработки файлов...\n")
             for fn in self.processed_files:
-                self.info.insert(END, f"Обрабатывается файл {fn}\n")
-                # print(self.template_file.name)
-                self.func(fn, self.template_file.name, name_save_dir)
-                self.info.insert(END, f"Обработка файла {fn} завершена\n")
+                try:
+                    self.info.insert(END, f"Обрабатывается файл {fn}\n")
+                    # print(self.template_file.name)
+                    self.func(fn, self.template_file.name, name_save_dir)
+                except Exception as err:
+                    self.info.insert(END, f"Возникла ошибка обработки файла {err}")
+                else:
+                    self.info.insert(END, f"Обработка файла \"{fn}\" завершена\n")
