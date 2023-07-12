@@ -90,6 +90,6 @@ class App:
                 log = self.func(fn, self.template_file.name, self.save_location)
                 self.info.insert(END, log)
             except Exception as err:
-                self.info.insert(END, f"Возникла ошибка обработки файла {err}")
+                self.info.insert(END, f"Возникла ошибка обработки файла {err}\n")
             else:
                 self.info.insert(END, f"Обработка файла \"{fn}\" завершена\n")
