@@ -17,7 +17,7 @@ class App:
         # buttons for action
         self.btn_processed = Button(self.master, text="Выберите файл(-ы) для обработки")
         self.btn_template = Button(self.master, text="Выберите шаблон")
-        self.btn_save = Button(self.master, text="Выберите место сохранения")
+        self.btn_save = Button(self.master, text="Сохранить как")
         self.btn_start = Button(self.master, text="Cтарт")
 
         # button click event binding
@@ -67,25 +67,26 @@ class App:
 
     def _press_start(self):
 
+        self.info.delete(1.0, END)
+
         if self.template_file == "":
-            self.info.insert(END, "Не выбран шаблон .txt для замены значений в .csv файле!\n")
+            self.info.insert(END, "ОШИБКА! Не выбран шаблон .txt для замены значений в .csv файле!\n")
             return
 
         if self.processed_files == "":
-            self.info.insert(END, "Не выбраны .csv файлы для обработки!\n")
+            self.info.insert(END, "ОШИБКА! Не выбраны .csv файлы для обработки!\n")
             return
 
         if self.save_location == "":
-            self.info.insert(END, "Не выбрана папка для сохранения файлов!\n"
-                                  "Обработанные файлы сохраняю в то же место где находится программа\n")
+            self.info.insert(END, "ОШИБКА! Не выбрана папка для сохранения файлов!\n")
+            return
 
         self.save_location += f"/output_{str(datetime.datetime.now())}".replace(":", ".")
-
         self.info.insert(END, "Начало обработки файлов...\n")
 
         for fn in self.processed_files:
             try:
-                self.info.insert(END, f"Обрабатывается файл {fn}\n")
+                self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
                 # print(self.template_file.name)
                 log = self.func(fn, self.template_file.name, self.save_location)
                 self.info.insert(END, log)
@@ -93,3 +94,10 @@ class App:
                 self.info.insert(END, f"Возникла ошибка обработки файла {err}\n")
             else:
                 self.info.insert(END, f"Обработка файла \"{fn}\" завершена\n")
+
+        self.save_location = ""
+        self.template_file = ""
+        self.processed_files = ""
+
+
+
