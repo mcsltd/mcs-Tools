@@ -214,6 +214,7 @@ def process_csvfile(csvfile, template, name_save_dir):
 
 def main():
     root = Tk()
+    # ToDo: add help in main window
     app = App(root, process_csvfile)
     root.mainloop()
 
