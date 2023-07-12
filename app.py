@@ -77,7 +77,7 @@ class App:
 
         if self.save_location == "":
             self.info.insert(END, "Не выбрана папка для сохранения файлов!\n"
-                                  "Обработанные файлы сохраняю в то же место где находится программа")
+                                  "Обработанные файлы сохраняю в то же место где находится программа\n")
 
         self.save_location += f"/output_{str(datetime.datetime.now())}".replace(":", ".")
 
