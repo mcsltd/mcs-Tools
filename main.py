@@ -20,26 +20,15 @@ SYMBOLS = ["\'", "\"", "\n"]
 def preprocess_data(name_data):
     with open(name_data, "r") as txt_file, open(NAME_BUFFER_FILE, "w") as temp:
         flag = False
-        i = 0
-        j = 0
+        cnt_str = 0
         for line in txt_file.readlines():
-
             # looking for the beginning of the cap
             if TEMPLATE_NAME_1 in line:
                 flag = True
-                # if i != 0:
-                #     # app.info.insert(END, "  Шапка до \"Designator\" удалена!\n")
-                # else:
-                #     # app.info.insert(END, "  В файле не была найдена шапка!\n")
             if flag:
-                if not(TEMPLATE_NAME_2 in line):
-                    print(line.replace("\"", ""), file=temp, end="")
-                else:
-                    j += 1
-            if j > 0:
-                pass
-                # app.info.insert(END, f" {j} строк содержащих {TEMPLATE_NAME_2} было удалено\n")
-            i += 1
+                cnt_str += 1
+                print(line.replace("\"", ""), file=temp, end="")
+        return cnt_str - 1
 
 
 def get_templates(template):
@@ -66,8 +55,11 @@ def create_dir(name_dir):
 
 
 def process_csvfile(csvfile, template, name_save_dir):
+    name_csv_file = csvfile[csvfile.rfind("/") + 1:]
+    log = f"Общее количество строк в обрабатываемом файле {name_csv_file}"
+
     # remove unwanted lines and symbols
-    preprocess_data(csvfile)
+    log += f" - {preprocess_data(csvfile)}\n"
 
     # get templates
     templates = get_templates(template)
@@ -75,7 +67,7 @@ def process_csvfile(csvfile, template, name_save_dir):
     # create dir for save processed file
     create_dir(name_save_dir)
 
-    name_csv_file = csvfile[csvfile.rfind("/") + 1:]
+
     name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
     name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
     name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
@@ -110,6 +102,8 @@ def process_csvfile(csvfile, template, name_save_dir):
 
         footprint_prev_top = ""
         footprint_prev_bot = ""
+        buffer_top = ""
+        buffer_bot = ""
         i = 0
         j = 0
 
@@ -119,6 +113,10 @@ def process_csvfile(csvfile, template, name_save_dir):
             flag_del = False
 
             for sign in name_keys:
+
+                if sign == "Designator":
+                    if TEMPLATE_NAME_2 in row[sign]:
+                        flag_del = True
 
                 if sign == "Footprint":
                     if row[sign] in templates:
@@ -202,10 +200,16 @@ def process_csvfile(csvfile, template, name_save_dir):
         csv_writer_bot.writerows(proc_data_bot)
         csv_writer_del.writerows(proc_data_del)
 
+    log += f"В обработанном файле TOP_{name_csv_file} - {len(proc_data_top)}\n"
+    log += f"В обработанном файле BOT_{name_csv_file} - {len(proc_data_bot)}\n"
+    log += f"В обработанном файле DELETE_{name_csv_file} - {len(proc_data_del)}\n\n"
+
     try:
         os.remove(NAME_BUFFER_FILE)
     except Exception as err:
         print(f"Cannot remove buffer file {err}")
+
+    return log
 
 
 def main():
