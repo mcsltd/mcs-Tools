@@ -21,6 +21,7 @@ def preprocess_data(name_data):
     with open(name_data, "r") as txt_file, open(NAME_BUFFER_FILE, "w") as temp:
         flag = False
         cnt_str = 0
+        cap = []
         for line in txt_file.readlines():
             # looking for the beginning of the cap
             if TEMPLATE_NAME_1 in line:
@@ -28,7 +29,9 @@ def preprocess_data(name_data):
             if flag:
                 cnt_str += 1
                 print(line.replace("\"", ""), file=temp, end="")
-        return cnt_str - 1
+            else:
+                cap.append(line)
+        return cap, cnt_str - 1
 
 
 def get_templates(template):
@@ -59,14 +62,14 @@ def process_csvfile(csvfile, template, name_save_dir):
     log = f"Общее количество строк в обрабатываемом файле {name_csv_file}"
 
     # remove unwanted lines and symbols
-    log += f" - {preprocess_data(csvfile)}\n"
+    cap, cnt = preprocess_data(csvfile)
+    log += f" - {cnt}\n"
 
     # get templates
     templates = get_templates(template)
 
     # create dir for save processed file
     create_dir(name_save_dir)
-
 
     name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
     name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
@@ -90,6 +93,9 @@ def process_csvfile(csvfile, template, name_save_dir):
 
         csv_writer_bot = csv.DictWriter(bot_file, fieldnames=name_keys.copy())
         csv_writer_bot.writeheader()
+
+        # write cap in delete file
+        print(*cap, file=del_file)
 
         csv_writer_del = csv.DictWriter(del_file, fieldnames=name_keys.copy())
         csv_writer_del.writeheader()
