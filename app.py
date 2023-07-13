@@ -14,6 +14,20 @@ class App:
         self.template_file = ""
         self.save_location = ""
 
+        # create menu
+        self.main_menu = Menu(self.master)
+        self.master.config(menu=self.main_menu)
+
+        self.help_menu = Menu(self.main_menu, tearoff=0)
+        self.help_menu.add_command(label="О программе",
+                                   command=self._get_info_about)
+        self.help_menu.add_command(label="Порядок работы c программой",
+                                   command=self._get_info_procedure)
+        self.help_menu.add_command(label="Правила оформления шаблона для обработки .csv файла",
+                                   command=self._get_info_template)
+        self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
+
+
         # buttons for action
         self.btn_processed = Button(self.master, text="Выберите файл(-ы) для обработки")
         self.btn_template = Button(self.master, text="Выберите шаблон")
@@ -31,6 +45,63 @@ class App:
         self.info.config(yscrollcommand=self.scroll.set)
 
         self._set_ui()
+
+    def _get_info_about(self):
+        sub_master = Tk()
+        sub_master.geometry("+500+300")
+        sub_master.title("О программе ...")
+        text = "Программа служит для обработки .csv файла(-ов) с заголовком:\n" \
+               "Designator,Footprint,Center-X(mm),Center-Y(mm),Layer,Rotation,Comment\n\n" \
+               "Обработка файла включает в себя удаление символов \" , а также замену слов\n" \
+               "по файлу, в котором указаны шаблоны замены.\n\n" \
+               "Обработанные  строки для  файла(-ов) в  зависимости  от столбца \"Rotation\"\n" \
+               "и информации, указанной в  файле с шаблонами  замены, распределяются по трём\n" \
+               "файлам:\n" \
+               " 1)Top;\n 2)Bottom;\n 3)Delete.\n\n" \
+               "Для  обработанных  файлов  генерируется  папка с  именем \"Output\" и  временем \n" \
+               "начала обработки .csv файлов."
+        info = Label(sub_master, text=text, justify="left").pack()
+        sub_master.mainloop()
+
+    def _get_info_procedure(self):
+        sub_master = Tk()
+        sub_master.geometry("+500+300")
+        sub_master.title("Порядок работы с программой")
+        text = "1) Программе указываются необработанные файл или файлы только в формате\n" \
+               "    .csv и только с заголовком:\n\n" \
+               "   Designator,Footprint,Center-X(mm),Center-Y(mm),Layer,Rotation,Comment\n\n" \
+               "2) Программе указывает шаблон со  словами на  которые нужно заменить те,\n" \
+               "    что в необработанном .csv файле.  Этот файл обязательно  должен  быть\n" \
+               "    в формате .txt.\n\n" \
+               "3) Программе обязательно указывается место сохранения файлов.\n\n" \
+               "4) Программа начинает  обработку  файлов  после  нажатия кнопки \"Старт\"\n" \
+               "    Информация об обработке отображается в поле справа от кнопок.\n\n" \
+               "5) Если Вы хотите обработать другие необработанные файлы .сsv, тогда\n" \
+               "    нужно повторить пункты 1 - 4."
+        info = Label(sub_master, text=text, justify="left").pack()
+        sub_master.mainloop()
+
+    def _get_info_template(self):
+        sub_master = Tk()
+        sub_master.geometry("+500+300")
+        sub_master.title("Правила оформления шаблона для обработки .csv файла")
+        text = "Файл с шаблоном замены должен иметь формат .txt. Он может иметь\n" \
+               "любое  название.  Главное,  чтобы  данные в  этом  файле  были \n" \
+               "организованы следующим образом:\n\n" \
+               "   'что_менять'   'на_что_менять'\n\n " \
+               "Пример:\n" \
+               "\'IPC-7351/CAPC1005M\' \'0402C_501\'\n\n" \
+               "ГЛАВНОЕ: файл с шаблонами замены должен содержать ТОЛЬКО шаблоны\n" \
+               "замены, не допускаются комментарии,  одиночные  слова в  строках,\n" \
+               "пустые строки, повторение слов, которые нужно заменить по шаблону.\n\n" \
+               "Слова шаблоны должны быть атомарными (не должны присутствовать пробелы):\n\n" \
+               "'MCS_WORK/LATTICE/CM36A-ICE40 #2' - CM36A_503\n\n" \
+               "Здесь пустая строка не допускается и приведёт к ошибке. Не допускается\n" \
+               "также повторное использование слов, которые нужно заменить:\n\n" \
+               "'MCS_WORK/LATTICE/CM36A-ICE40 #2' - CM36A_503\n" \
+               "'MCS_WORK/LATTICE/CM36A-ICE40 #2' - CH3A_511\n"
+        info = Label(sub_master, text=text, justify="left").pack()
+        sub_master.mainloop()
 
     def _set_ui(self):
         # name of application
