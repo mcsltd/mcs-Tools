@@ -32,7 +32,7 @@ class App:
         self.btn_processed = Button(self.master, text="Выберите файл(-ы) для обработки")
         self.btn_template = Button(self.master, text="Выберите шаблон")
         self.btn_save = Button(self.master, text="Сохранить как")
-        self.btn_start = Button(self.master, text="Cтарт")
+        self.btn_start = Button(self.master, text="Обработать")
 
         # button click event binding
         self.btn_processed["command"] = self._get_processed_files
@@ -129,14 +129,31 @@ class App:
     def _get_processed_files(self):
         self.processed_files = fd.askopenfilenames(
             title="Выберите файл(-ы) для обработки",
-            filetypes=(("CSV Files", "*.csv"),)
+            filetypes=(
+                ("CSV Files", ".csv"),
+            )
         )
 
     def _get_template(self):
         self.template_file = fd.askopenfile(
             title="Выберите файл-шаблон подстановки",
-            filetypes=(("TXT Files", "*.txt"),)
+            filetypes=(
+                ("TXT Files", "*.txt"),
+                ("Excel files", ".xls")
+            )
         )
+
+        # show info about selected files
+        if self.template_file is not None:
+            fn = self.template_file.name[self.template_file.name.rfind("/") + 1:]
+
+            if ".xls" in self.template_file.name[-4:]:
+                self.info.insert(END, f"Выбран файл {fn} c шаблонами.\n")
+                self.btn_start.configure(text="Обработать .xls файлом")
+
+            if ".txt" in self.template_file.name[-4:]:
+                self.info.insert(END, f"Выбран файл {fn} c шаблонами.\n")
+                self.btn_start.configure(text="Обработать .txt файлом")
 
     def _press_start(self):
 
