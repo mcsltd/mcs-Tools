@@ -313,10 +313,11 @@ def processing_xls_file(csvfile, file_xls_template, name_save_dir=None):
 
     sink = []  # lines from the processed csv file that differ from the template
 
+    name_csv_file = csvfile[csvfile.rfind("/") + 1:]
     # the name of the new file with changes
-    name_new_file = f"{name_save_dir}/NEW_{csvfile}"
+    name_new_file = f"{name_save_dir}/NEW_{name_csv_file}"
     # the names of the new file with old lines that have differences
-    name_sink_file = f"{name_save_dir}/SINK_{csvfile}"
+    name_sink_file = f"{name_save_dir}/SINK_{name_csv_file}"
 
     for row in data:
         if row[COL_DESIGNATOR] in template:
@@ -351,14 +352,14 @@ def processing_xls_file(csvfile, file_xls_template, name_save_dir=None):
             csv_writer_sink.writerows(sink)
 
         # create log for App
-        log += f"В обрабатываемом файле {csvfile} было найдено {len(sink)} различий с файлом {file_xls_template}.\n"
+        log += f"В обрабатываемом файле\n {csvfile}\nбыло найдено {len(sink)} различий с файлом\n {file_xls_template}.\n"
         log += f"Все строки, в которых было найдено отличие по колонкам \"Footprint\" " \
-               f"и \"Comment\", были заменены на значения из файла {file_xls_template}\n"
+               f"и \"Comment\", были заменены на значения из файла\n{file_xls_template}.\n"
     else:
         # create log for App
-        log += f"Обрабатываемый файл {csvfile} и файл со шаблонами {file_xls_template} не имеет различий."
+        log += f"Обрабатываемый файл\n{csvfile}\nи файл со шаблонами\n{file_xls_template}\nне имеет различий.\n"
 
-    return sink
+    return log
 
 
 def main():
@@ -367,16 +368,17 @@ def main():
         processing_xls_file
     ]
 
-    pprint(processing_xls_file(
-        csvfile="BOT_input.csv",
-        file_xls_template="BOM.xls",
-        name_save_dir="./"
-    ))
+    # idle run function
+    # pprint(processing_xls_file(
+    #     csvfile="BOT_input.csv",
+    #     file_xls_template="BOM.xls",
+    #     name_save_dir="./"
+    # ))
 
-    # root = Tk()
-    # # ToDo: add help in main window
-    # app = App(root, processing_funcs)
-    # root.mainloop()
+    root = Tk()
+    # ToDo: add help in main window
+    app = App(root, processing_funcs)
+    root.mainloop()
 
 
 if __name__ == "__main__":

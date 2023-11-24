@@ -23,7 +23,7 @@ class App:
                                    command=self._get_info_about)
         self.help_menu.add_command(label="Порядок работы c программой",
                                    command=self._get_info_procedure)
-        self.help_menu.add_command(label="Правила оформления шаблона для обработки .csv файла",
+        self.help_menu.add_command(label="Правила оформления шаблона .txt для обработки файла",
                                    command=self._get_info_template)
         self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
 
@@ -50,16 +50,25 @@ class App:
         sub_master = Tk()
         sub_master.geometry("+500+300")
         sub_master.title("О программе ...")
-        text = "Программа служит для обработки .csv файла(-ов) с заголовком:\n" \
+        text = "Программа служит для обработки .csv и .xls файла(-ов).\n\n" \
+               "Обрабатываемые .csv файлы должны иметь заголовок:\n" \
                "Designator,Footprint,Center-X(mm),Center-Y(mm),Layer,Rotation,Comment\n\n" \
-               "Обработка файла включает в себя удаление символов \" , а также замену слов\n" \
+               "Обработка .сsv файла включает в себя удаление символов \" , а также замену слов\n" \
                "по файлу, в котором указаны шаблоны замены.\n\n" \
+               "Существует два типа файлов со шаблонами: .txt и .xls файлы\n\n" \
+               "  -  Если выбран файл .txt с шаблонами:\n" \
                "Обработанные  строки для  файла(-ов) в  зависимости  от столбца \"Rotation\"\n" \
                "и информации, указанной в  файле с шаблонами  замены, распределяются по трём\n" \
                "файлам:\n" \
                " 1)Top;\n 2)Bottom;\n 3)Delete.\n\n" \
                "В файл \"Delete\" отправляются файлы для которых не указан  шаблон  замены и\n" \
-               "строки содержащие шаблон \"~FV\".\n" \
+               "строки содержащие шаблон \"~FV\".\n\n" \
+               "  -  Если выбран файл .xls с шаблонами:\n" \
+               "Данные из .csv файла проверяются на равенство по шаблону из .xls файла.\n" \
+               "Равенство проверяется по значениям из колонок \"Footprint\" и \"Comment\".\n" \
+               "Если были найдены неравенства, то создаются два файла с префиками SINK_ и NEW_.\n\n" \
+               " 1) SINK_file_name - файл содержит строки, в которых программа нашла отличия;\n" \
+               " 2) NEW_file_name - обновленные строки в соответствии со шаблоном.\n\n" \
                "Для  обработанных  файлов  генерируется  папка с  именем \"Output\" и  временем \n" \
                "начала обработки .csv файлов."
         info = Label(sub_master, text=text, justify="left").pack()
@@ -72,14 +81,15 @@ class App:
         text = "1) Программе указываются необработанные файл или файлы только в формате\n" \
                "    .csv и только с заголовком:\n\n" \
                "   Designator,Footprint,Center-X(mm),Center-Y(mm),Layer,Rotation,Comment\n\n" \
-               "2) Программе указывает шаблон со  словами на  которые нужно заменить те,\n" \
+               "2) Программе указывает шаблон со словами на которые нужно заменить те,\n" \
                "    что в необработанном .csv файле.  Этот файл обязательно  должен  быть\n" \
-               "    в формате .txt.\n\n" \
+               "    в формате .txt, либо в формате .xls (*).\n\n" \
                "3) Программе обязательно указывается место сохранения файлов.\n\n" \
-               "4) Программа начинает  обработку  файлов  после  нажатия кнопки \"Старт\"\n" \
+               "4) Программа начинает  обработку  файлов  после  нажатия кнопки \"Обработать {формат} файлом.\"\n" \
                "    Информация об обработке отображается в поле справа от кнопок.\n\n" \
                "5) Если Вы хотите обработать другие необработанные файлы .сsv, тогда\n" \
-               "    нужно повторить пункты 1 - 4."
+               "    нужно повторить пункты 1 - 4.\n\n" \
+               "(*) - файл .xls имеет особый формат, выбор альтернативных .xls файлов приведёт к ошибке."
         info = Label(sub_master, text=text, justify="left").pack()
         sub_master.mainloop()
 
@@ -176,26 +186,23 @@ class App:
 
         for fn in self.processed_files:
             try:
-                log = ""
+                log = "Выбранный файл не обработан..."
                 for func in self.funcs:
 
-                    # print(func.__name__, type(func.__name__))
-                    # print(self.btn_start.cget("text"))
-
+                    # select a function depending on the template format
                     if "xls" in func.__name__ and "xls" in self.btn_start.cget("text"):
                         self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
-                        print(func.__name__)
                         log = func(fn, self.template_file.name, self.save_location)
+
                     elif "txt" in func.__name__ and "txt" in self.btn_start.cget("text"):
                         self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
-                        print(func.__name__)
                         log = func(fn, self.template_file.name, self.save_location)
 
                 self.info.insert(END, log)
             except Exception as err:
                 self.info.insert(END, f"Возникла ошибка обработки файла {err}\n")
             else:
-                self.info.insert(END, f"Обработка файла \"{fn}\" завершена\n")
+                self.info.insert(END, f"Обработка файла \"{fn}\" закончена\n")
 
         self.save_location = ""
         self.template_file = ""
