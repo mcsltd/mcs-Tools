@@ -34,7 +34,7 @@ def preprocess_data(name_data):
         return cap, cnt_str - 1
 
 
-def get_templates(template):
+def get_template_txt_file(template):
     t = {}
     with open(template, "r") as file_t:
         lines = file_t.readlines()
@@ -57,7 +57,15 @@ def create_dir(name_dir):
         #                 )
 
 
-def process_csvfile(csvfile, template, name_save_dir):
+def processing_txt_file(csvfile, template, name_save_dir):
+    """
+    A function that processes a .csv file with a .txt file
+    :param csvfile:
+    :param template:
+    :param name_save_dir:
+    :return:
+    """
+
     name_csv_file = csvfile[csvfile.rfind("/") + 1:]
     log = f"Общее количество строк в обрабатываемом файле {name_csv_file}"
 
@@ -66,7 +74,7 @@ def process_csvfile(csvfile, template, name_save_dir):
     log += f" - {cnt}\n"
 
     # get templates
-    templates = get_templates(template)
+    templates = get_template_txt_file(template)
 
     # create dir for save processed file
     create_dir(name_save_dir)
@@ -218,10 +226,27 @@ def process_csvfile(csvfile, template, name_save_dir):
     return log
 
 
+def processing_xls_file(csvfile, template, name_save_dir):
+    """
+    A function that processes a .csv file with a .xls file
+    :param csvfile:
+    :param template:
+    :param name_save_dir:
+    :return:
+    """
+    pass
+
+
 def main():
+    processing_funcs = [
+        processing_txt_file,
+        processing_xls_file
+    ]
+
     root = Tk()
+
     # ToDo: add help in main window
-    app = App(root, process_csvfile)
+    app = App(root, processing_funcs)
     root.mainloop()
 
 
