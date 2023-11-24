@@ -8,7 +8,7 @@ class App:
 
     def __init__(self, master, func):
         self.master = master
-        self.func = func
+        self.funcs = func
 
         self.processed_files = ""
         self.template_file = ""
@@ -176,9 +176,21 @@ class App:
 
         for fn in self.processed_files:
             try:
-                self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
-                # print(self.template_file.name)
-                log = self.func(fn, self.template_file.name, self.save_location)
+                log = ""
+                for func in self.funcs:
+
+                    # print(func.__name__, type(func.__name__))
+                    # print(self.btn_start.cget("text"))
+
+                    if "xls" in func.__name__ and "xls" in self.btn_start.cget("text"):
+                        self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
+                        print(func.__name__)
+                        log = func(fn, self.template_file.name, self.save_location)
+                    elif "txt" in func.__name__ and "txt" in self.btn_start.cget("text"):
+                        self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
+                        print(func.__name__)
+                        log = func(fn, self.template_file.name, self.save_location)
+
                 self.info.insert(END, log)
             except Exception as err:
                 self.info.insert(END, f"Возникла ошибка обработки файла {err}\n")
