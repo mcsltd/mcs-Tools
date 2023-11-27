@@ -149,7 +149,7 @@ class App:
             title="Выберите файл-шаблон подстановки",
             filetypes=(
                 ("TXT Files", "*.txt"),
-                ("Excel files", ".xls")
+                ("Excel files", ".xlsx .xls")
             )
         )
 
@@ -157,9 +157,10 @@ class App:
         if self.template_file is not None:
             fn = self.template_file.name[self.template_file.name.rfind("/") + 1:]
 
-            if ".xls" in self.template_file.name[-4:]:
+
+            if ".xl" in self.template_file.name[-5:]:
                 self.info.insert(END, f"Выбран файл {fn} c шаблонами.\n")
-                self.btn_start.configure(text="Обработать .xls файлом")
+                self.btn_start.configure(text="Обработать Excel файлом")
 
             if ".txt" in self.template_file.name[-4:]:
                 self.info.insert(END, f"Выбран файл {fn} c шаблонами.\n")
@@ -186,11 +187,11 @@ class App:
 
         for fn in self.processed_files:
             try:
-                log = "Выбранный файл не обработан..."
+                log = "Выбранный файл не обработан...\n"
                 for func in self.funcs:
 
                     # select a function depending on the template format
-                    if "xls" in func.__name__ and "xls" in self.btn_start.cget("text"):
+                    if "excel" in func.__name__ and "Excel" in self.btn_start.cget("text"):
                         self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
                         log = func(fn, self.template_file.name, self.save_location)
 
@@ -200,9 +201,9 @@ class App:
 
                 self.info.insert(END, log)
             except Exception as err:
-                self.info.insert(END, f"Возникла ошибка обработки файла {err}\n")
+                self.info.insert(END, f"Возникла ошибка обработки файла: {err}.\n")
             else:
-                self.info.insert(END, f"Обработка файла \"{fn}\" закончена\n")
+                self.info.insert(END, f"Обработка файла \"{fn}\" закончена.\n")
 
         self.save_location = ""
         self.template_file = ""

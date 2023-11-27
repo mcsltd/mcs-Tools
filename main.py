@@ -265,6 +265,10 @@ def get_template_excel_file(filename):
     for ref, foot, part in zip(df[COLUMN_REFERENCE], df[COLUMN_FOOTPRINT], df[COLUMN_PART]):
         # print(ref, " - ", part, " - ", foot)
 
+        # check empty string in row
+        if str(ref) == "nan":
+            continue
+
         # get list of references
         ref = get_references(ref)
 
@@ -298,7 +302,7 @@ COL_FOOTPRINT = "Footprint"
 COL_COMMENT = "Comment"
 
 
-def processing_xls_file(csvfile, file_xls_template, name_save_dir=None):
+def processing_excel_file(csvfile, file_xls_template, name_save_dir=None):
     """
     A function that processes a .csv file with a .xls file
     :param csvfile:
@@ -365,7 +369,7 @@ def processing_xls_file(csvfile, file_xls_template, name_save_dir=None):
 def main():
     processing_funcs = [
         processing_txt_file,
-        processing_xls_file
+        processing_excel_file
     ]
 
     # idle run function
