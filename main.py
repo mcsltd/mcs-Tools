@@ -1,6 +1,9 @@
 import csv
 import datetime
 import os.path
+from pprint import pprint
+
+import pandas as pd
 
 from app import *
 
@@ -12,7 +15,6 @@ TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/FIDUCIAL_MARK"
 # TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/"
 
 NAME_BUFFER_FILE = "temp.csv"
-
 
 SYMBOLS = ["\'", "\"", "\n"]
 
@@ -34,7 +36,7 @@ def preprocess_data(name_data):
         return cap, cnt_str - 1
 
 
-def get_templates(template):
+def get_template_txt_file(template):
     t = {}
     with open(template, "r") as file_t:
         lines = file_t.readlines()
@@ -57,7 +59,15 @@ def create_dir(name_dir):
         #                 )
 
 
-def process_csvfile(csvfile, template, name_save_dir):
+def processing_txt_file(csvfile, template, name_save_dir):
+    """
+    A function that processes a .csv file with a .txt file
+    :param csvfile:
+    :param template:
+    :param name_save_dir:
+    :return:
+    """
+
     name_csv_file = csvfile[csvfile.rfind("/") + 1:]
     log = f"Общее количество строк в обрабатываемом файле {name_csv_file}"
 
@@ -66,7 +76,7 @@ def process_csvfile(csvfile, template, name_save_dir):
     log += f" - {cnt}\n"
 
     # get templates
-    templates = get_templates(template)
+    templates = get_template_txt_file(template)
 
     # create dir for save processed file
     create_dir(name_save_dir)
@@ -80,9 +90,9 @@ def process_csvfile(csvfile, template, name_save_dir):
     #                      f" 2){name_bot_file};\n"
     #                      f" 3){name_del_file}.")
 
-    with open(NAME_BUFFER_FILE) as r_file,\
-            open(name_top_file, "w", newline="") as top_file,\
-            open(name_bot_file, "w", newline="") as bot_file,\
+    with open(NAME_BUFFER_FILE) as r_file, \
+            open(name_top_file, "w", newline="") as top_file, \
+            open(name_bot_file, "w", newline="") as bot_file, \
             open(name_del_file, "w", newline="") as del_file:
 
         csv_reader = list(csv.DictReader(r_file))
@@ -191,7 +201,7 @@ def process_csvfile(csvfile, template, name_save_dir):
                     row[sign] = row[sign].replace(" ", "_").replace("\n", "")
 
                 if sign in row and sign is None:
-                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]]\
+                    row[name_keys[len(name_keys) - 2]] = row[name_keys[len(name_keys) - 2]] \
                                                          + row[sign][0].replace("\n", "")
                     row.pop(sign)
 
@@ -218,13 +228,165 @@ def process_csvfile(csvfile, template, name_save_dir):
     return log
 
 
+def get_references(ref):
+    """
+    Converts a string with references to a list of references
+    :param ref: str have format "smth1,smth2,smth3,"
+    :return: list
+    """
+    ref = ref.replace(",", " ").split()
+    return ref
+
+
+def get_template_excel_file(filename):
+    """
+    Getting replacement templates for Designator in a CSV file
+    :param filename: Excel file str
+    :return: substitution template dict
+    """
+    # head of columns in excel file
+    COLUMN_REFERENCE = "Reference"
+    COLUMN_FOOTPRINT = "Footprint"
+    COLUMN_PART = "Part"
+
+    # head of columns in csv file
+    CSV_COLUMN_FOOTPRINT = "Footprint"
+    CSV_COLUMN_COMMENT = "Comment"
+
+    xl = pd.ExcelFile(filename)
+
+    # get first sheet in excel file
+    df = xl.parse(xl.sheet_names[0])
+
+    # # change column footprint
+    # COLUMN_FOOTPRINT = list(filter(lambda x: x if COLUMN_FOOTPRINT in x else None, df.keys().tolist()))[0]
+
+    template = {}
+    last_foot = ""
+    last_part = ""
+
+    for ref, foot, part in zip(df[COLUMN_REFERENCE], df[COLUMN_FOOTPRINT], df[COLUMN_PART]):
+        # print(ref, " - ", part, " - ", foot)
+
+        # check empty string in row
+        if str(ref) == "nan":
+            continue
+
+        # get list of references
+        ref = get_references(ref)
+
+        # update value of Footprint and Part
+        if str(foot) != "nan":
+            last_foot = foot
+        if str(part) != "nan":
+            last_part = part
+
+        # generating a template from an Excel file
+        for r in ref:
+            template[r] = {
+                CSV_COLUMN_FOOTPRINT: last_foot,
+                CSV_COLUMN_COMMENT: last_part
+            }
+    return template
+
+
+def get_data_csv_file(csvfilename):
+    data = []
+    with open(csvfilename) as read_file:
+        file_reader = csv.DictReader(read_file, delimiter=",")
+        for d in file_reader:
+            data.append(d)
+    return data
+
+
+# Column names in the processed file.
+COL_DESIGNATOR = "Designator"
+COL_FOOTPRINT = "Footprint"
+COL_COMMENT = "Comment"
+
+
+def processing_excel_file(csvfile, file_xls_template, name_save_dir=None):
+    """
+    A function that processes a .csv file with a .xls file
+    :param csvfile:
+    :param template:
+    :param name_save_dir:
+    :return:
+    """
+    log = ""
+
+    template = get_template_excel_file(file_xls_template)
+    data = get_data_csv_file(csvfile)  # data for processing
+
+    sink = []  # lines from the processed csv file that differ from the template
+
+    name_csv_file = csvfile[csvfile.rfind("/") + 1:]
+    # the name of the new file with changes
+    name_new_file = f"{name_save_dir}/NEW_{name_csv_file}"
+    # the names of the new file with old lines that have differences
+    name_sink_file = f"{name_save_dir}/SINK_{name_csv_file}"
+
+    for row in data:
+        if row[COL_DESIGNATOR] in template:
+            # name in column Designator
+            dsg = row[COL_DESIGNATOR]
+
+            if template[dsg][COL_FOOTPRINT] != row[COL_FOOTPRINT]:
+                # if there are differences, keep them
+                sink.append(row.copy())
+
+                # change the value in the Footprint column to the value in the same column from the template
+                row[COL_FOOTPRINT] = template[dsg][COL_FOOTPRINT]
+
+                if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
+                    # change the value in the Footprint column to the value in the same column from the template
+                    row[COL_COMMENT] = template[dsg][COL_COMMENT]
+
+    if len(sink) != 0:
+        # create dir for save processed file
+        create_dir(name_save_dir)
+
+        with open(name_new_file, "w", newline="") as new_file, open(name_sink_file, "w", newline="") as sink_file:
+            # name of columns
+            name_keys = list(sink[0].keys())
+
+            csv_writer_new = csv.DictWriter(new_file, fieldnames=name_keys.copy())
+            csv_writer_new.writeheader()
+            csv_writer_new.writerows(data)
+
+            csv_writer_sink = csv.DictWriter(sink_file, fieldnames=name_keys.copy())
+            csv_writer_sink.writeheader()
+            csv_writer_sink.writerows(sink)
+
+        # create log for App
+        log += f"В обрабатываемом файле\n {csvfile}\nбыло найдено {len(sink)} различий с файлом\n {file_xls_template}.\n"
+        log += f"Все строки, в которых было найдено отличие по колонкам \"Footprint\" " \
+               f"и \"Comment\", были заменены на значения из файла\n{file_xls_template}.\n"
+    else:
+        # create log for App
+        log += f"Обрабатываемый файл\n{csvfile}\nи файл со шаблонами\n{file_xls_template}\nне имеет различий.\n"
+
+    return log
+
+
 def main():
+    processing_funcs = [
+        processing_txt_file,
+        processing_excel_file
+    ]
+
+    # idle run function
+    # pprint(processing_xls_file(
+    #     csvfile="BOT_input.csv",
+    #     file_xls_template="BOM.xls",
+    #     name_save_dir="./"
+    # ))
+
     root = Tk()
     # ToDo: add help in main window
-    app = App(root, process_csvfile)
+    app = App(root, processing_funcs)
     root.mainloop()
 
 
 if __name__ == "__main__":
     main()
-
