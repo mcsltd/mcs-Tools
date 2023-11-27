@@ -258,6 +258,9 @@ def get_template_excel_file(filename):
     # get first sheet in excel file
     df = xl.parse(xl.sheet_names[0])
 
+    # # change column footprint
+    # COLUMN_FOOTPRINT = list(filter(lambda x: x if COLUMN_FOOTPRINT in x else None, df.keys().tolist()))[0]
+
     template = {}
     last_foot = ""
     last_part = ""
