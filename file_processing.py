@@ -3,7 +3,6 @@ import os
 
 import pandas as pd
 
-
 # buffer name file
 NAME_BUFFER_FILE = "temp.csv"
 
@@ -97,10 +96,94 @@ class csvFile:
         with open(file_name, "w") as file:
             file.writelines(data)
 
-    def txt_file_processing(self, name_template):
+    def txt_file_processing(self, name_save_dir, name_template):
+        # create dir for save processed file
+        create_dir(name_save_dir)
+
+        # name of create file
+        name_csv_file = self.name_csv_file[self.name_csv_file.rfind("/") + 1:]
+
+        # the name of the new file with changes
+        name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
+        # the names of the new file with old lines that have differences
+        name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
+        # the names of the new file with old lines that have differences
+        name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
+
+        # preprocess CSV data
+        # create save dir, temp file, save delete data in file with prefix DELETE_
+        self.preprocessing(name_del_file)
+
         # get templates
-        # templates = self._get_template_txt_file(name_template)
-        pass
+        template = self._get_template_txt_file(name_template)
+
+        # for file top
+        data_top = []
+        # for file bottom
+        data_bot = []
+        # for file delete
+        data_del = []
+
+        with open(NAME_BUFFER_FILE) as data_file, \
+                open(name_top_file, "w", newline="") as top_file, \
+                open(name_bot_file, "w", newline="") as bot_file, \
+                open(name_del_file, "a", newline="") as del_file:
+
+            csv_data = list(DictReader(data_file))
+            name_col = list(csv_data[0].keys())
+
+            for row in csv_data:
+
+                flag_bot = False
+                flag_top = False
+                flag_del = False
+
+                for col in name_col:
+
+                    if col == "Footprint":
+                        if row[col] in template:
+                            if str(template[row[col]]).lower() == "delete":
+                                data_del.append(row.copy())
+                                flag_del = True
+                                break
+                            else:
+                                row[col] = template[row[col]]
+
+                    if col == "Rotation" and row[col] in template:
+                        row[col] = template[row[col]]
+
+                    if col == "Comment":
+                        row[col] = row[col].replace(" ", "_").replace("\n", "")
+
+                    if col == "Layer":
+                        if row[col] == "BottomLayer":
+                            flag_bot = True
+
+                        elif row[col] == "TopLayer":
+                            flag_top = True
+
+                # save processing data
+                if flag_bot:
+                    data_bot.append(row.copy())
+                elif flag_top:
+                    data_top.append(row.copy())
+                elif flag_del:
+                    data_del.append(row.copy())
+
+            csv_writer_top = DictWriter(top_file, fieldnames=name_col.copy())
+            csv_writer_top.writeheader()
+            csv_writer_top.writerows(data_top)
+
+            csv_writer_bot = DictWriter(bot_file, fieldnames=name_col.copy())
+            csv_writer_bot.writeheader()
+            csv_writer_bot.writerows(data_bot)
+
+            csv_writer_del = DictWriter(del_file, fieldnames=name_col.copy())
+            # csv_writer_del.writeheader()
+            csv_writer_del.writerows(data_del)
+
+        os.remove(NAME_BUFFER_FILE)
+
 
     def _get_template_txt_file(self, name_template):
         """
@@ -120,6 +203,7 @@ class csvFile:
                     ln = ln.split()
                     t.update({ln[0]: ln[1]})
         return t
+
 
     def excel_file_processing(self, file_excel_template, name_save_dir):
         # create dir for save processed file
@@ -165,7 +249,8 @@ class csvFile:
                         # change the value in the Footprint column to the value in the same column from the template
                         row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
-        with open(name_new_file, "w", newline="") as new_file, open(name_sink_file, "w", newline="") as sink_file:
+        with open(name_new_file, "w", newline="") as new_file,\
+                open(name_sink_file, "w", newline="") as sink_file:
             # name of columns
             name_keys = list(sink[0].keys())
 
@@ -179,6 +264,7 @@ class csvFile:
             csv_writer_sink.writeheader()
             csv_writer_sink.writerows(sink)
 
+        os.remove(NAME_BUFFER_FILE)
 
     def _get_template_excel_file(self, filename):
         """
@@ -241,6 +327,19 @@ def ex_proc_excel_file():
         name_save_dir=name_save_dir
     )
 
+def ex_proc_txt_file():
+    import datetime
+    d = csvFile(name_csv_file="file.csv")
+
+    time = f"\TXT_output_{str(datetime.datetime.now())}".replace(":", ".")
+    name_save_dir = rf"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\{time}"
+
+    d.txt_file_processing(
+        name_save_dir=name_save_dir,
+        name_template="template_new.txt"
+    )
+
 
 if __name__ == "__main__":
-    ex_proc_excel_file()
+    # ex_proc_excel_file()
+    ex_proc_txt_file()
