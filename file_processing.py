@@ -83,14 +83,24 @@ class csvFile:
 
     def preprocessing(self, name_delete_file):
 
-        # get header
-        delete = self.delete_header().copy()
+        try:
+            # get header
+            delete = self.delete_header().copy()
 
-        # get delete string in table
-        delete.extend(self.delete_template_repeat())
+            # get delete string in table
+            delete.extend(self.delete_template_repeat())
 
-        # save delete data
-        self._create_delete_file(name_delete_file, delete)
+            # save delete data
+            self._create_delete_file(name_delete_file, delete)
+
+            ok, log = (True, "Сделана предобработка файла:\n" \
+                             "- удалена шапка .CSV файла;\n" \
+                             f"- удалены символы: {TEMPLATE_REPEAT_1, TEMPLATE_REPEAT_2, TEMPLATE_REPEAT_3}\n" \
+                             f"Все удалённые строки сохранены в файле с префиксом DELETE_.\n")
+        except Exception as err:
+            ok, log = (False, err)
+
+        return ok, log
 
     def _create_delete_file(self, file_name, data):
         with open(file_name, "w") as file:
@@ -112,7 +122,11 @@ class csvFile:
 
         # preprocess CSV data
         # create save dir, temp file, save delete data in file with prefix DELETE_
-        self.preprocessing(name_del_file)
+        ok, log = self.preprocessing(name_del_file)
+
+        if not ok:
+            log += "ВОЗНИКЛА ОШИБКА! Обработка не удалась!\n"
+            return log
 
         # get templates
         template = self._get_template_txt_file(name_template)
@@ -183,7 +197,8 @@ class csvFile:
             csv_writer_del.writerows(data_del)
 
         os.remove(NAME_BUFFER_FILE)
-
+        log += "Обработка .csv файла TXT файлом завершена."
+        return log
 
     def _get_template_txt_file(self, name_template):
         """
@@ -204,7 +219,6 @@ class csvFile:
                     t.update({ln[0]: ln[1]})
         return t
 
-
     def excel_file_processing(self, file_excel_template, name_save_dir):
         # create dir for save processed file
         create_dir(name_save_dir)
@@ -220,7 +234,11 @@ class csvFile:
 
         # preprocess CSV data
         # create save dir, temp file, save delete data in file with prefix DELETE_
-        self.preprocessing(name_delete_file)
+        ok, log = self.preprocessing(name_delete_file)
+
+        if not ok:
+            log += "ВОЗНИКЛА ОШИБКА! Обработка не удалась!\n"
+            return log
 
         # Column names in the processed file.
         COL_DESIGNATOR = "Designator"
@@ -249,7 +267,7 @@ class csvFile:
                         # change the value in the Footprint column to the value in the same column from the template
                         row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
-        with open(name_new_file, "w", newline="") as new_file,\
+        with open(name_new_file, "w", newline="") as new_file, \
                 open(name_sink_file, "w", newline="") as sink_file:
             # name of columns
             name_keys = list(sink[0].keys())
@@ -265,6 +283,9 @@ class csvFile:
             csv_writer_sink.writerows(sink)
 
         os.remove(NAME_BUFFER_FILE)
+
+        log += "Обработка .csv файла Excel файлом завершена.\n"
+        return log
 
     def _get_template_excel_file(self, filename):
         """
@@ -326,6 +347,7 @@ def ex_proc_excel_file():
         file_excel_template="BOM.xlsx",
         name_save_dir=name_save_dir
     )
+
 
 def ex_proc_txt_file():
     import datetime

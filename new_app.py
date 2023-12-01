@@ -1,11 +1,8 @@
 import configparser
-from tkinter import *
-from tkinter.ttk import *
-
+from datetime import datetime
 from tkinter import filedialog as fd
-
 from editor import *
-
+from file_processing import csvFile
 
 def set_config(template_file_name):
     """
@@ -34,6 +31,11 @@ class App:
         # parse config file
         self.config_file = "config.ini"
         self.template_txt = self.get_config()
+
+        self.save_location = ""
+        self.template_excel_file = ""
+        self.processed_file = ""
+
         pass
 
     def get_config(self):
@@ -72,7 +74,7 @@ class App:
         #                            command=self._get_info_procedure)
         # self.help_menu.add_command(label="Правила оформления шаблона .txt для обработки файла",
         #                            command=self._get_info_template)
-        self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
+        # self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
 
         # Excel file processing
         self.frame_excel = Frame(self.notebook)
@@ -80,7 +82,7 @@ class App:
             self.frame_excel,
             text="Выбрать файл(-ы) для обработки",
             width=45,
-            command=self._get_processed_files
+            command=self._get_processed_file
         )
         self.btn_template_excel = Button(
             self.frame_excel,
@@ -97,7 +99,8 @@ class App:
         self.btn_start_excel = Button(
             self.frame_excel,
             text="Обработать выбранные файлы",
-            width=45
+            width=45,
+            command=self._start_processing
         )
 
         # .txt file processing
@@ -106,7 +109,7 @@ class App:
             self.frame_txt,
             text="Выбрать файл(-ы) для обработки",
             width=45,
-            command=self._get_processed_files
+            command=self._get_processed_file
         )
         self.btn_save_txt = Button(
             self.frame_txt,
@@ -118,12 +121,12 @@ class App:
             self.frame_txt,
             text="Обработать выбранные файлы",
             width=45,
-            command=self._start_processing
+            command=self._start_processing,
         )
 
         # Add File Processing tabs
-        self.notebook.add(self.frame_excel, text="Обработка Excel файлом", padding=7)
-        self.notebook.add(self.frame_txt, text="Обработка .txt файлом", padding=7)
+        self.notebook.add(self.frame_excel, text="Обработка Excel файлом", padding=7, )
+        self.notebook.add(self.frame_txt, text="Обработка TXT файлом", padding=7)
 
         # Add panel info
         self.info = Text()
@@ -152,23 +155,21 @@ class App:
 
     def _get_save_location(self):
         self.save_location = fd.askdirectory(
-            title="Выбор места сохранения обработанных файлов"
+            title="Выбор место сохранения обработанного файла"
         )
 
-    def _get_processed_files(self):
-        self.processed_files = fd.askopenfilenames(
-            title="Выберите файл(-ы) для обработки",
+    def _get_processed_file(self):
+        self.processed_file = fd.askopenfilename(
+            title="Выберите файл для обработки",
             filetypes=(
                 ("CSV Files", ".csv"),
             )
         )
 
     def _get_template(self):
-        self.template_file = fd.askopenfile(
+        self.template_excel_file = fd.askopenfilename(
             title="Выберите Excel файл с шаблонами",
-            filetypes=(
-                ("Excel files", ".xlsx .xls")
-            )
+            filetypes=[("Excel files", ".xlsx .xls")]
         )
 
     def change_template_txt(self):
@@ -184,7 +185,47 @@ class App:
         win.grab_set()
 
     def _start_processing(self):
-        pass
+
+        self.info.delete(1.0, END)
+
+        if self.processed_file == "":
+            self.info.insert(END, "ОШИБКА! Не выбраны .csv файлы для обработки!\n")
+            return
+
+        if self.save_location == "":
+            self.info.insert(END, "ОШИБКА! Не выбрана папка для сохранения файлов!\n")
+            return
+
+        csv_file = csvFile(
+            name_csv_file=self.processed_file
+        )
+
+        self.save_location += f"/output_{str(datetime.now())}".replace(":", ".")
+
+        ind = self.notebook.select()
+        # ind == 0: Excel file processing
+        # ind == 1: TXT file processing
+        if self.notebook.tabs().index(ind) == 0:
+
+            if self.template_excel_file == "":
+                self.info.insert(END, "ОШИБКА! Не выбран шаблон .txt для замены значений в .csv файле!\n")
+                return
+
+            self.info.insert(END, "Выбрана обработка Excel файлом.\n")
+            log = csv_file.excel_file_processing(
+                file_excel_template=self.template_excel_file,
+                name_save_dir=self.save_location
+            )
+
+        elif self.notebook.tabs().index(ind) == 1:
+
+            self.info.insert(END, "Выбрана обработка TXT файлом.\n")
+            log = csv_file.txt_file_processing(
+                name_save_dir=self.save_location,
+                name_template=self.template_txt
+            )
+
+        self.info.insert(END, log)
 
 
 if __name__ == "__main__":
