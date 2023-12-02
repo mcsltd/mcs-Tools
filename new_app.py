@@ -1,10 +1,17 @@
 import configparser
 from datetime import datetime
 from tkinter import filedialog as fd
+from tkinter.messagebox import *
 from editor import *
 from file_processing import csvFile
 
-def set_config(template_file_name):
+import os
+
+PATH_TO_DIR_CONFIG = os.environ["HOMEDRIVE"] + os.environ["HOMEPATH"] + f"\\.mcs-tools"
+PATH_TO_CONFIG = os.environ["HOMEDRIVE"] + os.environ["HOMEPATH"] + f"\\.mcs-tools\\config.ini"
+
+
+def set_config(path_to_config, path_to_template):
     """
     Setting the path to the file with .txt templates.
     :param template_file_name: name of template file
@@ -12,17 +19,63 @@ def set_config(template_file_name):
     """
     # Create config
     config = configparser.ConfigParser()
-    config.add_section("Settings")
-    config.set("Settings", "path", template_file_name)
+    config.add_section("Settings - CSV Handler App")
+    config.set("Settings - CSV Handler App", "path", path_to_template)
 
     # Save config into file
-    with open("config.ini", "w") as config_file:
+    with open(path_to_config, "w") as config_file:
         config.write(config_file)
+def get_config(path_to_config):
+    """
+    Retrieving data from a configuration file.
+    :return:
+    """
+    config = configparser.ConfigParser()
+    # read config file
+    config.read(path_to_config)
+    # get config data
+    file_name = config.get("Settings - CSV Handler App", "path")
+    return file_name
+def load_preference():
+    """
+    load txt file from config.ini.
+    :return: str path to txt template file.
+    """
+    # create dir config is not exists
+    if not os.path.exists(PATH_TO_DIR_CONFIG):
+        os.mkdir(PATH_TO_DIR_CONFIG)
+
+    # check if file with config exists
+    if not os.path.exists(PATH_TO_CONFIG):
+
+        result = askyesno(
+            title="Поиск TXT файла с шаблонами",
+            message="Найти TXT файл с шаблонами?"
+        )
+
+        if result:
+            path_to_template = fd.askopenfilename(
+                title="Выберите TXT файл с шаблонами",
+                filetypes=[('text files', 'txt')]
+            )
+        else:
+            path_to_template = None
+            return path_to_template
+
+        # get file .txt template
+        path_to_template = path_to_template
+        # create config file and set path to txt template file
+        set_config(PATH_TO_CONFIG, path_to_template)
+
+    # get path to txt template
+    path_to_template = get_config(PATH_TO_CONFIG)
+    return path_to_template
+
 
 
 class App:
 
-    def __init__(self, master):
+    def __init__(self, master, path_to_txt_template):
         self.master = master
 
         # setup UI for application
@@ -30,25 +83,13 @@ class App:
 
         # parse config file
         self.config_file = "config.ini"
-        self.template_txt = self.get_config()
+        self.template_txt = path_to_txt_template
 
         self.save_location = ""
         self.template_excel_file = ""
         self.processed_file = ""
 
         pass
-
-    def get_config(self):
-        """
-        Retrieving data from a configuration file.
-        :return:
-        """
-        config = configparser.ConfigParser()
-        # read config file
-        config.read('config.ini')
-        # get config data
-        file_name = config.get("Settings", "path")
-        return file_name
 
     def _set_ui(self):
         """
@@ -205,6 +246,7 @@ class App:
         ind = self.notebook.select()
         # ind == 0: Excel file processing
         # ind == 1: TXT file processing
+
         if self.notebook.tabs().index(ind) == 0:
 
             if self.template_excel_file == "":
@@ -229,11 +271,15 @@ class App:
 
 
 if __name__ == "__main__":
-    root = Tk()
+    path_to_template = load_preference()
 
-    app = App(root)
-
-    root.mainloop()
+    if path_to_template is not None:
+        root = Tk()
+        app = App(
+            root,
+            path_to_template
+        )
+        root.mainloop()
 
     # set path to template txt file
     # set_config(
