@@ -72,7 +72,6 @@ def load_preference():
     return path_to_template
 
 
-
 class App:
 
     def __init__(self, master, path_to_txt_template):
@@ -229,14 +228,18 @@ class App:
         win.grab_set()
 
     def choose_template_txt(self):
-        self.template_txt = fd.askopenfilename(
+        new_template_txt = fd.askopenfilename(
             title="Выберите TXT файл с шаблонами",
             filetypes=[('text files', 'txt')]
         )
-        set_config(
-            path_to_config=PATH_TO_CONFIG,
-            path_to_template=self.template_txt
-        )
+
+        if new_template_txt != "":
+            self.template_txt = new_template_txt
+            # set new path to txt template file in config.ini
+            set_config(
+                path_to_config=PATH_TO_CONFIG,
+                path_to_template=self.template_txt
+            )
 
     def _start_processing(self):
 
@@ -300,5 +303,6 @@ if __name__ == "__main__":
     # )
 
 # Идеи для тестов
-# 1. Обработка пустым файлом txt
+# 1. Обработка .csv файла пустым файлом txt
+# 2. Обработка .сsv
 
