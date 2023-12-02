@@ -78,6 +78,9 @@ class App:
     def __init__(self, master, path_to_txt_template):
         self.master = master
 
+        # name of application
+        self.master.title("Обработчик .CSV файлов для станка")
+
         # setup UI for application
         self._set_ui()
 
@@ -88,7 +91,6 @@ class App:
         self.save_location = ""
         self.template_excel_file = ""
         self.processed_file = ""
-
         pass
 
     def _set_ui(self):
@@ -105,6 +107,7 @@ class App:
         # tab edit
         self.edit_menu = Menu(self.main_menu, tearoff=0)
         self.edit_menu.add_command(label="Изменить .txt шаблон", command=self.change_template_txt)
+        self.edit_menu.add_command(label="Выбрать новый .txt шаблон", command=self.choose_template_txt)
         self.main_menu.add_cascade(label="Изменить", menu=self.edit_menu)
 
         # tab help
@@ -225,6 +228,16 @@ class App:
         )
         win.grab_set()
 
+    def choose_template_txt(self):
+        self.template_txt = fd.askopenfilename(
+            title="Выберите TXT файл с шаблонами",
+            filetypes=[('text files', 'txt')]
+        )
+        set_config(
+            path_to_config=PATH_TO_CONFIG,
+            path_to_template=self.template_txt
+        )
+
     def _start_processing(self):
 
         self.info.delete(1.0, END)
@@ -285,3 +298,7 @@ if __name__ == "__main__":
     # set_config(
     #     template_file_name="./template_new.txt"
     # )
+
+# Идеи для тестов
+# 1. Обработка пустым файлом txt
+
