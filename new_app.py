@@ -77,15 +77,14 @@ class App:
     def __init__(self, master, path_to_txt_template):
         self.master = master
 
+        # parse config file
+        self.template_txt = path_to_txt_template
+
         # name of application
         self.master.title("Обработчик .CSV файлов для станка")
 
         # setup UI for application
         self._set_ui()
-
-        # parse config file
-        self.config_file = "config.ini"
-        self.template_txt = path_to_txt_template
 
         self.save_location = ""
         self.template_excel_file = ""
@@ -246,38 +245,43 @@ class App:
         self.info.delete(1.0, END)
 
         if self.processed_file == "":
-            self.info.insert(END, "ОШИБКА! Не выбраны .csv файлы для обработки!\n")
+            self.info.insert(END, "ОШИБКА! Не выбраны .CSV файл для обработки!\n")
             return
+        self.info.insert(END, f"Выбран .CSV файл для обработки:\n{self.processed_file}\n\n")
 
         if self.save_location == "":
             self.info.insert(END, "ОШИБКА! Не выбрана папка для сохранения файлов!\n")
             return
+        self.info.insert(END, f"Выбрано место для сохранения обработанных файлов:\n{self.processed_file}\n\n")
 
         csv_file = csvFile(
             name_csv_file=self.processed_file
         )
-
-        self.save_location += f"/output_{str(datetime.now())}".replace(":", ".")
 
         ind = self.notebook.select()
         # ind == 0: Excel file processing
         # ind == 1: TXT file processing
 
         if self.notebook.tabs().index(ind) == 0:
+            self.save_location += f"/EXCEL_output_{str(datetime.now())}".replace(":", ".")
 
             if self.template_excel_file == "":
-                self.info.insert(END, "ОШИБКА! Не выбран шаблон .txt для замены значений в .csv файле!\n")
+                self.info.insert(END, "ОШИБКА! Не выбран шаблон Excel для замены значений в .csv файле!\n")
                 return
 
-            self.info.insert(END, "Выбрана обработка Excel файлом.\n")
+            self.info.insert(END, f"Выбран шаблон Excel файла для обработки:\n{self.template_excel_file}\n\n")
+            self.info.insert(END, "Выбрана обработка Excel файлом.\n\n")
+
             log = csv_file.excel_file_processing(
                 file_excel_template=self.template_excel_file,
                 name_save_dir=self.save_location
             )
 
         elif self.notebook.tabs().index(ind) == 1:
+            self.save_location += f"/TXT_output_{str(datetime.now())}".replace(":", ".")
+            self.info.insert(END, f"Автоматически выбран шаблон .txt для обработки:\n{self.template_txt}.\n\n")
+            self.info.insert(END, "Выбрана обработка TXT файлом.\n\n")
 
-            self.info.insert(END, "Выбрана обработка TXT файлом.\n")
             log = csv_file.txt_file_processing(
                 name_save_dir=self.save_location,
                 name_template=self.template_txt

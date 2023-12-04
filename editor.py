@@ -1,6 +1,7 @@
 from tkinter.ttk import *
 from tkinter import *
 
+from tkinter.messagebox import showerror
 
 class Editor:
     def __init__(self, master, name_file):
@@ -39,9 +40,15 @@ class Editor:
         Get the text of the replacement templates and output it to the text field for modification.
         :return:
         """
-        with open(self.name_file, "r") as file:
-            t = "".join(file.readlines())
-            self.text.insert(1.0, t)
+        try:
+            with open(self.name_file, "r") as file:
+                t = "".join(file.readlines())
+                self.text.insert(1.0, t)
+        except Exception as err:
+            showerror(
+                title="Обработчик .CSV файлов",
+                message="Файл c шаблонами .txt не существует!\n self.name_file"
+            )
 
     def _save_modify_file(self):
         """
