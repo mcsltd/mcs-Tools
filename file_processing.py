@@ -392,7 +392,7 @@ def ex_proc_txt_file():
 
     d.txt_file_processing(
         name_save_dir=name_save_dir,
-        name_template="template_new.txt"
+        name_template="template.txt"
     )
 
 

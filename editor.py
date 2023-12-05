@@ -62,6 +62,6 @@ class Editor:
 if __name__ == "__main__":
     root = Tk()
 
-    app = Editor(root, name_file="template_new.txt")
+    app = Editor(root, name_file="template.txt")
 
     root.mainloop()
