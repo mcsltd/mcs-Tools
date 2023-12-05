@@ -42,21 +42,25 @@ class csvFile:
         flag = False
         header = []
 
+        log = ""
         with open(self.name_csv_file, "r") as file, open(NAME_BUFFER_FILE, "w") as temp_file:
-            for line in file.readlines():
+            lines = file.readlines()
+            log = f"Выбранный файл .CSV {self.name_csv_file} \n" \
+                  f"имеет {len(lines)} строк. \n\n"
+            for l in lines:
 
-                if TABLE_START_TEMPLATE in line:
+                if TABLE_START_TEMPLATE in l:
                     # add begin of table in file DELETE
-                    header.append(line)
+                    header.append(l)
                     flag = True
 
                 # the beginning of the column names was encountered
                 if flag:
-                    temp_file.write(line)
+                    temp_file.write(l)
                 else:
-                    header.append(line)
+                    header.append(l)
 
-        return header
+        return log, header
 
     def delete_template_repeat(self):
 
@@ -82,10 +86,9 @@ class csvFile:
         return delete
 
     def preprocessing(self, name_delete_file):
-
         try:
             # get header
-            delete = self.delete_header().copy()
+            log, delete = self.delete_header()
 
             # get delete string in table
             delete.extend(self.delete_template_repeat())
@@ -93,10 +96,13 @@ class csvFile:
             # save delete data
             self._create_delete_file(name_delete_file, delete)
 
-            ok, log = (True, "Сделана предобработка файла:\n" \
-                             "- удалена шапка .CSV файла;\n" \
-                             f"- удалены символы: {TEMPLATE_REPEAT_1, TEMPLATE_REPEAT_2, TEMPLATE_REPEAT_3}\n" \
-                             f"Все удалённые строки сохранены в файле с префиксом DELETE_.\n")
+            ok = True
+            log += "Сделана предобработка файла:\n"\
+                   "- удалена шапка .CSV файла;\n"\
+                   f"- удалены строки со символами:\n "\
+                   f"{TEMPLATE_REPEAT_1, TEMPLATE_REPEAT_2, TEMPLATE_REPEAT_3}\n"\
+                   f"Все удалённые строки сохранены в файле с префиксом DELETE_.\n" \
+                   f"Всего удалённых строк: {len(delete)}.\n\n"
         except Exception as err:
             ok, log = (False, err)
 
@@ -125,7 +131,7 @@ class csvFile:
         ok, log = self.preprocessing(name_del_file)
 
         if not ok:
-            log += "ВОЗНИКЛА ОШИБКА! Обработка не удалась!\n"
+            log += "ВОЗНИКЛА ОШИБКА! Обработка .CSV файла не удалась!\n"
             return log
 
         # get templates
@@ -171,9 +177,11 @@ class csvFile:
 
                     if col == "Layer":
                         if row[col] == "BottomLayer":
+                            row[col] = "B"
                             flag_bot = True
 
                         elif row[col] == "TopLayer":
+                            row[col] = "T"
                             flag_top = True
 
                 # save processing data
@@ -196,6 +204,10 @@ class csvFile:
             # csv_writer_del.writeheader()
             csv_writer_del.writerows(data_del)
 
+            log += f"В обработанном файле TOP_{name_csv_file} - {len(data_top)}\n"
+            log += f"В обработанном файле BOT_{name_csv_file} - {len(data_bot)}\n"
+            log += f"В обработанном файле DELETE_{name_csv_file} - {len(data_del)}\n\n"
+
         os.remove(NAME_BUFFER_FILE)
         log += "Обработка .csv файла TXT файлом завершена."
         return log
@@ -208,15 +220,18 @@ class csvFile:
         """
         t = {}
         symbols = ["\'", "\"", "\n"]
-
-        with open(name_template, "r") as file_template:
-            lines = file_template.readlines()
-            for ln in lines:
-                if ln != "\n":
-                    for el in symbols:
-                        ln = ln.replace(el, "")
-                    ln = ln.split()
-                    t.update({ln[0]: ln[1]})
+        log = ""
+        try:
+            with open(name_template, "r") as file_template:
+                lines = file_template.readlines()
+                for ln in lines:
+                    if ln != "\n":
+                        for el in symbols:
+                            ln = ln.replace(el, "")
+                        ln = ln.split()
+                        t.update({ln[0]: ln[1]})
+        except Exception:
+            log += f"Отсуствует файл:\n {name_template}.\n\n"
         return t
 
     def excel_file_processing(self, file_excel_template, name_save_dir):
@@ -252,6 +267,10 @@ class csvFile:
         sink = []  # lines from the processed csv file that differ from the template
 
         for row in data:
+
+            # if added in sink than don't add in sink
+            flag_add = True
+
             if row[COL_DESIGNATOR] in template:
                 # name in column Designator
                 dsg = row[COL_DESIGNATOR]
@@ -259,28 +278,43 @@ class csvFile:
                 if template[dsg][COL_FOOTPRINT] != row[COL_FOOTPRINT]:
                     # if there are differences, keep them
                     sink.append(row.copy())
+                    flag_add = False
 
                     # change the value in the Footprint column to the value in the same column from the template
                     row[COL_FOOTPRINT] = template[dsg][COL_FOOTPRINT]
 
-                    if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
-                        # change the value in the Footprint column to the value in the same column from the template
-                        row[COL_COMMENT] = template[dsg][COL_COMMENT]
+                if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
+
+                    if flag_add:
+                        # if there are differences, keep them
+                        sink.append(row.copy())
+                        flag_add = False
+
+                    # change the value in the Footprint column to the value in the same column from the template
+                    row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
         with open(name_new_file, "w", newline="") as new_file, \
                 open(name_sink_file, "w", newline="") as sink_file:
-            # name of columns
-            name_keys = list(sink[0].keys())
+
+            if len(data) == 0:
+                name_keys = ""
+                log += "Файл .CSV пустой!\n"
+            else:
+                # name of columns
+                name_keys = list(sink[0].keys())
 
             # save new data in file with prefix NEW_
-            csv_writer_new = DictWriter(new_file, fieldnames=name_keys.copy())
+            csv_writer_new = DictWriter(new_file, fieldnames=name_keys)
             csv_writer_new.writeheader()
             csv_writer_new.writerows(data)
 
             # save old version changed data in file with prefix ZAMENA_
-            csv_writer_sink = DictWriter(sink_file, fieldnames=name_keys.copy())
+            csv_writer_sink = DictWriter(sink_file, fieldnames=name_keys)
             csv_writer_sink.writeheader()
             csv_writer_sink.writerows(sink)
+
+            log += f"В обработанном файле NEW_{name_csv_file} - {len(data)}\n"
+            log += f"В обработанном файле ZAMENA_{name_csv_file} - {len(sink)}\n"
 
         os.remove(NAME_BUFFER_FILE)
 
