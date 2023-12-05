@@ -102,10 +102,16 @@ class App:
         self.main_menu = Menu(self.master)
         self.master.config(menu=self.main_menu)
 
+        # tab file
+        self.file_menu = Menu(self.main_menu, tearoff=0)
+        self.file_menu.add_command(label="Выход", command=self._close_app)
+        # self.edit_menu.add_command(label="Выбрать новый .txt шаблон", command=self.choose_template_txt)
+        self.main_menu.add_cascade(label="Файл", menu=self.file_menu)
+
         # tab edit
         self.edit_menu = Menu(self.main_menu, tearoff=0)
         self.edit_menu.add_command(label="Изменить .txt шаблон", command=self.change_template_txt)
-        self.edit_menu.add_command(label="Выбрать новый .txt шаблон", command=self.choose_template_txt)
+        # self.edit_menu.add_command(label="Выбрать новый .txt шаблон", command=self.choose_template_txt)
         self.main_menu.add_cascade(label="Изменить", menu=self.edit_menu)
 
         # tab help
@@ -140,7 +146,7 @@ class App:
         )
         self.btn_start_excel = Button(
             self.frame_excel,
-            text="Обработать выбранные файлы",
+            text="Обработать ...",
             width=45,
             command=self._start_processing
         )
@@ -161,7 +167,7 @@ class App:
         )
         self.btn_start_txt = Button(
             self.frame_txt,
-            text="Обработать выбранные файлы",
+            text="Обработать ...",
             width=45,
             command=self._start_processing,
         )
@@ -289,21 +295,34 @@ class App:
 
         self.info.insert(END, log)
 
+    def _close_app(self):
+        if askokcancel("Quit", "Do you want to quit?"):
+            root.destroy()
+
 
 if __name__ == "__main__":
-    path_to_template = load_preference()
+    # path_to_template = load_preference()
+    path_to_template = os.getcwd() + rf"\template.txt"
 
-    if path_to_template is not None:
+    if os.path.exists(path_to_template):
+
         root = Tk()
         app = App(
             root,
             path_to_template
         )
         root.mainloop()
+    else:
+        showwarning(
+            title="Не найден .txt файл с шаблонами замены",
+            message="Не найден файл template.txt."
+                    " Поместите в ту же директорию, в которой запущена программа файл template.txt.\n"
+                    "Работа программы прекращена."
+        )
 
     # set path to template txt file
     # set_config(
-    #     template_file_name="./template_new.txt"
+    #     template_file_name="./template.txt"
     # )
 
 # Идеи для тестов
