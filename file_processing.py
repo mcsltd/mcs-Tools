@@ -267,6 +267,10 @@ class csvFile:
         sink = []  # lines from the processed csv file that differ from the template
 
         for row in data:
+
+            # if added in sink than don't add in sink
+            flag_add = True
+
             if row[COL_DESIGNATOR] in template:
                 # name in column Designator
                 dsg = row[COL_DESIGNATOR]
@@ -274,13 +278,20 @@ class csvFile:
                 if template[dsg][COL_FOOTPRINT] != row[COL_FOOTPRINT]:
                     # if there are differences, keep them
                     sink.append(row.copy())
+                    flag_add = False
 
                     # change the value in the Footprint column to the value in the same column from the template
                     row[COL_FOOTPRINT] = template[dsg][COL_FOOTPRINT]
 
-                    if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
-                        # change the value in the Footprint column to the value in the same column from the template
-                        row[COL_COMMENT] = template[dsg][COL_COMMENT]
+                if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
+
+                    if flag_add:
+                        # if there are differences, keep them
+                        sink.append(row.copy())
+                        flag_add = False
+
+                    # change the value in the Footprint column to the value in the same column from the template
+                    row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
         with open(name_new_file, "w", newline="") as new_file, \
                 open(name_sink_file, "w", newline="") as sink_file:

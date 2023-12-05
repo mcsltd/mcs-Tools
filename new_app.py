@@ -263,7 +263,7 @@ class App:
         # ind == 1: TXT file processing
 
         if self.notebook.tabs().index(ind) == 0:
-            self.save_location += f"/EXCEL_output_{str(datetime.now())}".replace(":", ".")
+            self.save_location += f"/EXCEL_output_{str(datetime.now())[:-6]}".replace(":", ".")
 
             if self.template_excel_file == "":
                 self.info.insert(END, "ОШИБКА! Не выбран шаблон Excel для замены значений в .csv файле!\n")
