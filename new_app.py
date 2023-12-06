@@ -196,10 +196,13 @@ class App:
         self.btn_start_excel.grid(row=4, column=0, sticky=W, padx=10, pady=10)
 
         # Place info panel
-        self.info.grid(row=0, column=2, rowspan=6, columnspan=2, padx=10, pady=10, sticky=E)
+        self.info.grid(row=0, column=2, rowspan=6, columnspan=2, padx=10, pady=10, sticky=NSEW)
+        # add text box stretching
+        self.master.columnconfigure(index=2, weight=1)
+        self.master.rowconfigure(index=1, weight=1)
 
         # Place scroll bar
-        self.scroll.grid(row=0, rowspan=6, column=4, pady=2, padx=2, sticky="wns")
+        self.scroll.grid(row=0, rowspan=6, column=4, pady=2, padx=2, sticky="ns")
 
     def _get_save_location(self):
         self.save_location = fd.askdirectory(
@@ -296,7 +299,7 @@ class App:
         self.info.insert(END, log)
 
     def _close_app(self):
-        if askokcancel("Quit", "Do you want to quit?"):
+        if askokcancel("Выход", "Вы хотите выйти из программы?"):
             root.destroy()
 
 
