@@ -30,7 +30,10 @@ class Editor:
         self.btn_save.grid(row=0, column=0, padx=10, pady=10, sticky=W)
 
         # Place Text
-        self.text.grid(row=1, rowspan=6, column=0, columnspan=3, padx=10, pady=10, sticky=E)
+        self.text.grid(row=1, rowspan=6, column=0, columnspan=3, padx=10, pady=10, sticky=NSEW)
+        # add text box stretching
+        self.master.columnconfigure(index=0, weight=1)
+        self.master.rowconfigure(index=1, weight=1)
 
         # Place
         self.scroll.grid(row=1, rowspan=6, column=4, columnspan=3, pady=2, padx=2, sticky="wns")
