@@ -19,7 +19,8 @@ class Editor:
 
     def _set_ui(self):
         # Add Buttons
-        self.btn_save = Button(self.master, text="Сохранить", command=self._save_modify_file)
+        self.btn_add = Button(self.master, text="Добавить", command=self._add_template_to_file)
+        self.entry = Entry(self.master)
 
         # Add panel info
         self.text = Text(self.master)
@@ -27,12 +28,13 @@ class Editor:
         self.text.config(yscrollcommand=self.scroll.set)
 
         # Place button
-        self.btn_save.grid(row=0, column=0, padx=10, pady=10, sticky=W)
+        self.btn_add.grid(row=0, column=0, padx=10, pady=10, sticky=W)
+        self.entry.grid(row=0, column=1, columnspan=3, pady=10, padx=10, sticky=NSEW)
 
         # Place Text
         self.text.grid(row=1, rowspan=6, column=0, columnspan=3, padx=10, pady=10, sticky=NSEW)
         # add text box stretching
-        self.master.columnconfigure(index=0, weight=1)
+        self.master.columnconfigure(index=2, weight=1)
         self.master.rowconfigure(index=1, weight=1)
 
         # Place
@@ -46,20 +48,52 @@ class Editor:
         try:
             with open(self.name_file, "r") as file:
                 t = "".join(file.readlines())
+                self.text.configure(state=NORMAL)
                 self.text.insert(1.0, t)
+                self.text.configure(state=DISABLED)
         except Exception as err:
             showerror(
                 title="Обработчик .CSV файлов",
                 message="Файл c шаблонами .txt не существует!\n self.name_file"
             )
 
-    def _save_modify_file(self):
+    def _add_template_to_file(self):
         """
         Saving modified file.
         :return:
         """
-        with open(self.name_file, "w") as file:
-            file.write(self.text.get(1.0, END))
+        template = self.entry.get()
+        text = self.text.get(1.0, END).split("\n")
+
+        template = template.split()
+        if len(template) == 2:
+            for t in text:
+                if template[0] in t:
+                    showerror(
+                        title="Найден похожий шаблон",
+                        message=f"Для {template[0]} найден похожий элемент в файле шаблонов template.txt"
+                    )
+                    return
+
+            self.text.configure(state=NORMAL)
+            # insert template in Text widget
+            self.text.insert(END, " ".join(template))
+            self.text.configure(state=DISABLED)
+
+            # save template in txt
+            with open(self.name_file, "w") as file:
+                file.write(self.text.get(1.0, END))
+
+        else:
+            showerror(
+                title="Введен неправильный шаблон",
+                message=f"Введен неправильный шаблон. Вводите шаблон по следующему образцу:\n"
+                        f"  \'то-что-меняется\' то-на-что-меняется"
+            )
+
+
+
+
 
 
 if __name__ == "__main__":
