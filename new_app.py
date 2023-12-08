@@ -173,8 +173,15 @@ class App:
         )
 
         # Add File Processing tabs
-        self.notebook.add(self.frame_excel, text="Обработка Excel файлом", padding=7, )
-        self.notebook.add(self.frame_txt, text="Обработка TXT файлом", padding=7)
+        self.notebook.add(
+            self.frame_excel,
+            text="Обработка Excel файлом",
+            padding=7, )
+        self.notebook.add(
+            self.frame_txt,
+            # text="Обработка TXT файлом",
+            text="Обработка .CSV файла шаблоном",
+            padding=7)
 
         # Add panel info
         self.info = Text()
