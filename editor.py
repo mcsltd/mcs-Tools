@@ -104,6 +104,14 @@ class Editor:
     def _delete_template_in_file(self):
         new_text = []
         template = self.entry_del.get()
+
+        if template == "":
+            showinfo(
+                title="Введено неправильное значение",
+                message="Введена пустая строка."
+            )
+            return
+
         text = self.text.get(1.0, END).split("\n")
 
         flag_del = False

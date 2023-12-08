@@ -335,7 +335,3 @@ if __name__ == "__main__":
     #     template_file_name="./template.txt"
     # )
 
-# Идеи для тестов
-# 1. Обработка .csv файла пустым файлом txt
-# 2. Обработка .сsv
-
