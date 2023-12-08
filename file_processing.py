@@ -46,7 +46,7 @@ class csvFile:
         with open(self.name_csv_file, "r") as file, open(NAME_BUFFER_FILE, "w") as temp_file:
             lines = file.readlines()
             log = f"Выбранный файл .CSV {self.name_csv_file} \n" \
-                  f"имеет {len(lines)} строк. \n\n"
+                  f"имеет {len(lines) - 1} строк. \n\n"
             for l in lines:
 
                 if TABLE_START_TEMPLATE in l:
@@ -101,8 +101,8 @@ class csvFile:
                    "- удалена шапка .CSV файла;\n"\
                    f"- удалены строки со символами:\n "\
                    f"{TEMPLATE_REPEAT_1, TEMPLATE_REPEAT_2, TEMPLATE_REPEAT_3}\n"\
-                   f"Все удалённые строки сохранены в файле с префиксом DELETE_.\n" \
-                   f"Всего удалённых строк: {len(delete)}.\n\n"
+                   f"Все удалённые строки сохранены в файле с префиксом DELETE_.\n\n" \
+                   # f"Всего удалённых строк: {len(delete)}.\n\n"
         except Exception as err:
             ok, log = (False, err)
 
@@ -163,34 +163,39 @@ class csvFile:
                     if col == "Footprint":
                         if row[col] in template:
                             if str(template[row[col]]).lower() == "delete":
-                                data_del.append(row.copy())
+                                # data_del.append(row.copy())
                                 flag_del = True
                                 break
                             else:
                                 row[col] = template[row[col]]
 
+                    if col == "Comment":
+                        row[col] = row[col].replace(" ", "_").replace("\n", "")
+                        if row[col] in template and template[row[col]] == "delete":
+                            # data_del.append(row.copy())
+                            flag_del = True
+                            break
+
                     if col == "Rotation" and row[col] in template:
                         row[col] = template[row[col]]
 
-                    if col == "Comment":
-                        row[col] = row[col].replace(" ", "_").replace("\n", "")
-
                     if col == "Layer":
                         if row[col] == "BottomLayer":
-                            row[col] = "B"
+                            row[col] = template[row[col]]
                             flag_bot = True
 
                         elif row[col] == "TopLayer":
-                            row[col] = "T"
+                            row[col] = template[row[col]]
                             flag_top = True
 
                 # save processing data
-                if flag_bot:
+                if flag_del:
+                    data_del.append(row.copy())
+                elif flag_bot:
                     data_bot.append(row.copy())
                 elif flag_top:
                     data_top.append(row.copy())
-                elif flag_del:
-                    data_del.append(row.copy())
+
 
             csv_writer_top = DictWriter(top_file, fieldnames=name_col.copy())
             csv_writer_top.writeheader()
