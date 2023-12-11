@@ -3,7 +3,7 @@ from datetime import datetime
 from tkinter import filedialog as fd
 from tkinter.messagebox import *
 from editor import *
-from file_processing import csvFile
+from file_processing import *
 
 import os
 
@@ -116,13 +116,15 @@ class App:
 
         # tab help
         self.help_menu = Menu(self.main_menu, tearoff=0)
-        # self.help_menu.add_command(label="О программе",
-        #                            command=self._get_info_about)
-        # self.help_menu.add_command(label="Порядок работы c программой",
-        #                            command=self._get_info_procedure)
-        # self.help_menu.add_command(label="Правила оформления шаблона .txt для обработки файла",
-        #                            command=self._get_info_template)
-        # self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
+        self.help_menu.add_command(
+            label="Работа с программой ...",
+            command=self._get_info_processing_file
+        )
+        # self.help_menu.add_command(
+        #     label="Правила оформления шаблона .txt для обработки файла",
+        #     # command=self._get_info_template
+        # )
+        self.main_menu.add_cascade(label="Справка", menu=self.help_menu)
 
         # Excel file processing
         self.frame_excel = Frame(self.notebook)
@@ -210,6 +212,34 @@ class App:
 
         # Place scroll bar
         self.scroll.grid(row=0, rowspan=6, column=4, pady=2, padx=2, sticky="ns")
+
+    def _get_info_processing_file(self):
+        sub_master = Tk()
+        sub_master.geometry("+500+300")
+        sub_master.title("Порядок обработки .CSV файлов")
+        text = "Программа служит для обработки .csv файла.\n\n" \
+               "Обрабатываемые .csv файлы должны обязательно иметь заголовок:\n" \
+               "Designator,Footprint,Center-X(mm),Center-Y(mm),Layer,Rotation,Comment\n\n" \
+               "Обработка .сsv файла включает в себя удаление шапки, а также замену слов\n" \
+               "по файлу, в котором указаны шаблоны замены.\n\n" \
+               "Существует два типа файлов со шаблонами: .txt и Excel файлы\n\n" \
+               "  -  Если выбран файл .txt с шаблонами:\n" \
+               "Обработанные  строки для  файла(-ов) в  зависимости  от столбца \"Rotation\"\n" \
+               "и информации, указанной в  файле с шаблонами  замены, распределяются по трём\n" \
+               "файлам:\n" \
+               " 1)Top;\n 2)Bottom;\n 3)Delete.\n\n" \
+               "В файл \"Delete\" отправляются строки для которых в файле шаблона указано delete,\n" \
+               f"строки содержащие шаблон \"~FV\", \"{TEMPLATE_REPEAT_1}\", \"{TEMPLATE_REPEAT_2}\"\n\n" \
+               "  -  Если выбран файл Excel с шаблонами:\n" \
+               "Данные из .csv файла проверяются на равенство по шаблону из Excel файла.\n" \
+               "Равенство проверяется по значениям из колонок \"Footprint\" и \"Comment\".\n" \
+               "Если были найдены неравенства, то создаются два файла с префиками ZAMENA_ и NEW_.\n\n" \
+               " 1) ZAMENA_ - файл содержит строки, в которых программа нашла отличия;\n" \
+               " 2) NEW_ - обновленные строки в соответствии со шаблоном.\n\n" \
+               "Для  обработанных  файлов  генерируется  папка с  именем \"Output\" и  временем \n" \
+               "начала обработки .csv файлов."
+        info = Label(sub_master, text=text, justify="left").pack()
+        sub_master.mainloop()
 
     def _get_save_location(self):
         self.save_location = fd.askdirectory(
