@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 from tkinter.messagebox import *
 from editor import *
 from file_processing import *
+from tkinter import ttk
 
 import os
 
@@ -72,6 +73,9 @@ def load_preference():
     return path_to_template
 
 
+MODE_SEPARATE = 0
+MODE_ALONG = 1
+
 class App:
 
     def __init__(self, master, path_to_txt_template):
@@ -83,8 +87,12 @@ class App:
         # name of application
         self.master.title("Обработчик .CSV файлов для станка")
 
+        # state of saving file together or separate
+        self.mode_save_file = IntVar()
+
         # setup UI for application
         self._set_ui()
+
 
         self.save_location = ""
         self.template_excel_file = ""
@@ -97,6 +105,13 @@ class App:
         :return:
         """
         self.notebook = Notebook(self.master)
+
+        # checkbox for selecting file saving mode
+        self.checkbox_sep = ttk.Checkbutton(
+            text="Сохранять строки c BOT и TOP в разные файлы",
+            variable=self.mode_save_file,
+            command=self.test_checkbox
+        )
 
         # Create menu
         self.main_menu = Menu(self.master)
@@ -204,6 +219,9 @@ class App:
         self.btn_save_excel.grid(row=3, column=0, sticky=W, padx=10, pady=10)
         self.btn_start_excel.grid(row=4, column=0, sticky=W, padx=10, pady=10)
 
+        # place checkbox
+        self.checkbox_sep.grid(row=5, column=0, sticky=W, padx=10, pady=10)
+
         # Place info panel
         self.info.grid(row=0, column=2, rowspan=6, columnspan=2, padx=10, pady=10, sticky=NSEW)
         # add text box stretching
@@ -212,6 +230,9 @@ class App:
 
         # Place scroll bar
         self.scroll.grid(row=0, rowspan=6, column=4, pady=2, padx=2, sticky="ns")
+
+    def test_checkbox(self):
+        print(f"Состояние checkbox'а:{self.mode_save_file.get()}")
 
     def _get_info_processing_file(self):
         sub_master = Tk()
