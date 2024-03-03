@@ -12,6 +12,8 @@ TEMPLATE_REPEAT_1 = "MCS_WORK/MECH/"
 TEMPLATE_REPEAT_2 = "MCS_WORK/COMMON/FIDUCIAL_MARK"
 TEMPLATE_REPEAT_3 = "~FV"
 
+MODE_ALONG = 0
+MODE_SEPARATE = 1
 
 def create_dir(name_dir):
     if os.path.exists(name_dir):
@@ -112,19 +114,26 @@ class csvFile:
         with open(file_name, "w") as file:
             file.writelines(data)
 
-    def txt_file_processing(self, name_save_dir, name_template):
+    def txt_file_processing(self, name_save_dir, name_template, mode):
+
         # create dir for save processed file
         create_dir(name_save_dir)
 
         # name of create file
         name_csv_file = self.name_csv_file[self.name_csv_file.rfind("/") + 1:]
 
-        # the name of the new file with changes
-        name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
-        # the names of the new file with old lines that have differences
-        name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
-        # the names of the new file with old lines that have differences
-        name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
+
+        if mode == MODE_SEPARATE:
+            # the name of the new file with changes
+            name_top_file = f"{name_save_dir}/TOP_{name_csv_file}"
+            # the names of the new file with old lines that have differences
+            name_bot_file = f"{name_save_dir}/BOT_{name_csv_file}"
+            # the names of the new file with old lines that have differences
+            name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
+        else:
+            name_bot_top_file = f"{name_save_dir}/TOP_BOT_{name_csv_file}"
+            # the names of the new file with old lines that have differences
+            name_del_file = f"{name_save_dir}/DELETE_{name_csv_file}"
 
         # preprocess CSV data
         # create save dir, temp file, save delete data in file with prefix DELETE_
@@ -137,81 +146,148 @@ class csvFile:
         # get templates
         template = self._get_template_txt_file(name_template)
 
-        # for file top
-        data_top = []
-        # for file bottom
-        data_bot = []
-        # for file delete
-        data_del = []
+        if mode == MODE_SEPARATE:
+            # for file top
+            data_top = []
+            # for file bottom
+            data_bot = []
+            # for file delete
+            data_del = []
 
-        with open(NAME_BUFFER_FILE) as data_file, \
-                open(name_top_file, "w", newline="") as top_file, \
-                open(name_bot_file, "w", newline="") as bot_file, \
-                open(name_del_file, "a", newline="") as del_file:
+            with open(NAME_BUFFER_FILE) as data_file, \
+                    open(name_top_file, "w", newline="") as top_file, \
+                    open(name_bot_file, "w", newline="") as bot_file, \
+                    open(name_del_file, "a", newline="") as del_file:
 
-            csv_data = list(DictReader(data_file))
-            name_col = list(csv_data[0].keys())
+                csv_data = list(DictReader(data_file))
+                name_col = list(csv_data[0].keys())
 
-            for row in csv_data:
+                for row in csv_data:
 
-                flag_bot = False
-                flag_top = False
-                flag_del = False
+                    flag_bot = False
+                    flag_top = False
+                    flag_del = False
 
-                for col in name_col:
+                    for col in name_col:
 
-                    if col == "Footprint":
-                        if row[col] in template:
-                            if str(template[row[col]]).lower() == "delete":
+                        if col == "Footprint":
+                            if row[col] in template:
+                                if str(template[row[col]]).lower() == "delete":
+                                    # data_del.append(row.copy())
+                                    flag_del = True
+                                    break
+                                else:
+                                    row[col] = template[row[col]]
+
+                        if col == "Comment":
+                            row[col] = row[col].replace(" ", "_").replace("\n", "")
+                            if row[col] in template and template[row[col]] == "delete":
                                 # data_del.append(row.copy())
                                 flag_del = True
                                 break
-                            else:
+
+                        if col == "Rotation" and row[col] in template:
+                            row[col] = template[row[col]]
+
+                        if col == "Layer":
+                            if row[col] == "BottomLayer":
+                                row[col] = template[row[col]]
+                                flag_bot = True
+
+                            elif row[col] == "TopLayer":
+                                row[col] = template[row[col]]
+                                flag_top = True
+
+                    # save processing data
+                    if flag_del:
+                        data_del.append(row.copy())
+                    elif flag_bot:
+                        data_bot.append(row.copy())
+                    elif flag_top:
+                        data_top.append(row.copy())
+
+
+                csv_writer_top = DictWriter(top_file, fieldnames=name_col.copy())
+                csv_writer_top.writeheader()
+                csv_writer_top.writerows(data_top)
+
+                csv_writer_bot = DictWriter(bot_file, fieldnames=name_col.copy())
+                csv_writer_bot.writeheader()
+                csv_writer_bot.writerows(data_bot)
+
+                csv_writer_del = DictWriter(del_file, fieldnames=name_col.copy())
+                # csv_writer_del.writeheader()
+                csv_writer_del.writerows(data_del)
+
+                log += "Включен режим сохранения строк с TOP и BOT в разные файлы.\n"
+                log += f"В обработанном файле TOP_{name_csv_file} - {len(data_top)}\n"
+                log += f"В обработанном файле BOT_{name_csv_file} - {len(data_bot)}\n"
+                log += f"В обработанном файле DELETE_{name_csv_file} - {len(data_del)}\n\n"
+        else:
+            # for file top/bot
+            data_top_bot = []
+            # for file delete
+            data_del = []
+
+            with open(NAME_BUFFER_FILE) as data_file,\
+                    open(name_bot_top_file, "w", newline="") as top_bot_file,\
+                    open(name_del_file, "a", newline="") as del_file:
+
+                csv_data = list(DictReader(data_file))
+                name_col = list(csv_data[0].keys())
+
+                for row in csv_data:
+
+                    flag_top_bot = False
+                    flag_del = False
+
+                    for col in name_col:
+
+                        if col == "Footprint":
+                            if row[col] in template:
+                                if str(template[row[col]]).lower() == "delete":
+                                    # data_del.append(row.copy())
+                                    flag_del = True
+                                    break
+                                else:
+                                    row[col] = template[row[col]]
+
+                        if col == "Comment":
+                            row[col] = row[col].replace(" ", "_").replace("\n", "")
+                            if row[col] in template and template[row[col]] == "delete":
+                                # data_del.append(row.copy())
+                                flag_del = True
+                                break
+
+                        if col == "Rotation" and row[col] in template:
+                            row[col] = template[row[col]]
+
+                        if col == "Layer":
+                            if row[col] == "BottomLayer":
                                 row[col] = template[row[col]]
 
-                    if col == "Comment":
-                        row[col] = row[col].replace(" ", "_").replace("\n", "")
-                        if row[col] in template and template[row[col]] == "delete":
-                            # data_del.append(row.copy())
-                            flag_del = True
-                            break
+                            elif row[col] == "TopLayer":
+                                row[col] = template[row[col]]
+                            flag_top_bot = True
 
-                    if col == "Rotation" and row[col] in template:
-                        row[col] = template[row[col]]
+                    # save processing data
+                    if flag_del:
+                        data_del.append(row.copy())
+                    elif flag_top_bot:
+                        data_top_bot.append(row.copy())
 
-                    if col == "Layer":
-                        if row[col] == "BottomLayer":
-                            row[col] = template[row[col]]
-                            flag_bot = True
-
-                        elif row[col] == "TopLayer":
-                            row[col] = template[row[col]]
-                            flag_top = True
-
-                # save processing data
-                if flag_del:
-                    data_del.append(row.copy())
-                elif flag_bot:
-                    data_bot.append(row.copy())
-                elif flag_top:
-                    data_top.append(row.copy())
+                csv_writer_top_bot = DictWriter(top_bot_file, fieldnames=name_col.copy())
+                csv_writer_top_bot.writeheader()
+                csv_writer_top_bot.writerows(data_top_bot)
 
 
-            csv_writer_top = DictWriter(top_file, fieldnames=name_col.copy())
-            csv_writer_top.writeheader()
-            csv_writer_top.writerows(data_top)
+                csv_writer_del = DictWriter(del_file, fieldnames=name_col.copy())
+                # csv_writer_del.writeheader()
+                csv_writer_del.writerows(data_del)
 
-            csv_writer_bot = DictWriter(bot_file, fieldnames=name_col.copy())
-            csv_writer_bot.writeheader()
-            csv_writer_bot.writerows(data_bot)
-
-            csv_writer_del = DictWriter(del_file, fieldnames=name_col.copy())
-            # csv_writer_del.writeheader()
-            csv_writer_del.writerows(data_del)
-
-            log += f"В обработанном файле TOP_{name_csv_file} - {len(data_top)}\n"
-            log += f"В обработанном файле BOT_{name_csv_file} - {len(data_bot)}\n"
-            log += f"В обработанном файле DELETE_{name_csv_file} - {len(data_del)}\n\n"
+                log += "Включен режим сохранения строк с TOP и BOT в один файл. \n"
+                log += f"В обработанном файле TOP_BOT_{name_csv_file} - {len(data_top_bot)}\n"
+                log += f"В обработанном файле DELETE_{name_csv_file} - {len(data_del)}\n\n"
 
         os.remove(NAME_BUFFER_FILE)
         log += "Обработка .csv файла TXT файлом завершена."
