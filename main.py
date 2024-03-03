@@ -73,9 +73,6 @@ def load_preference():
     return path_to_template
 
 
-MODE_SEPARATE = 0
-MODE_ALONG = 1
-
 class App:
 
     def __init__(self, master, path_to_txt_template):
@@ -93,7 +90,6 @@ class App:
         # setup UI for application
         self._set_ui()
 
-
         self.save_location = ""
         self.template_excel_file = ""
         self.processed_file = ""
@@ -110,7 +106,7 @@ class App:
         self.checkbox_sep = ttk.Checkbutton(
             text="Сохранять строки c BOT и TOP в разные файлы",
             variable=self.mode_save_file,
-            command=self.test_checkbox
+            # command=self.test_checkbox
         )
 
         # Create menu
@@ -231,8 +227,8 @@ class App:
         # Place scroll bar
         self.scroll.grid(row=0, rowspan=6, column=4, pady=2, padx=2, sticky="ns")
 
-    def test_checkbox(self):
-        print(f"Состояние checkbox'а:{self.mode_save_file.get()}")
+    # def test_checkbox(self):
+    #     print(f"Состояние checkbox'а:{self.mode_save_file.get()}")
 
     def _get_info_processing_file(self):
         sub_master = Tk()
@@ -351,7 +347,8 @@ class App:
 
             log = csv_file.txt_file_processing(
                 name_save_dir=self.save_location,
-                name_template=self.template_txt
+                name_template=self.template_txt,
+                mode=self.mode_save_file.get()
             )
 
         self.info.insert(END, log)
