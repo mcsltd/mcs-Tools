@@ -1,83 +1,97 @@
 from reportlab.lib.pagesizes import A3
-from reportlab.lib.units import mm
-from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm, cm
+from reportlab.pdfgen.canvas import Canvas
 
-WIDTH_STICKER = 44 * mm
-HEIGHT_STICKER = 26.45 * mm
+from new_proj.draw import draw_sticker, draw_center_text, draw_serial, draw_ref_circle
+from read_template import read_xl
 
-# DPI = 198
-# WIDTH_STICKER = 4.4 / 2.54 * DPI
-# HEIGHT_STICKER = 2.645 / 2.54 * DPI
+# sticker size
+WIDTH_STICKER = 4.4 * cm
+HEIGHT_STICKER = 2.645 * cm
 
+# size of reference point
 DIAMETER_POINT = 7 * mm
 
+# indent sizes
 X_DISTANCE = 2 * mm
-Y_DISTANCE = X_DISTANCE * 2
+Y_DISTANCE = 3 * mm
+
+# size indent
+X_PAD = 14 * mm
+Y_PAD = 3 * mm
 
 
-def read_xls(path_to_xls):
-    template = {
-        "names": [],
-        "numbers": [],
-        "serial": []
-    }
-    return template
+def main(max_number_sticker, path_to_stick, path_to_save=None):
+    c = Canvas(path_to_save, pagesize=A3)
 
+    x, y = X_PAD, Y_PAD
+    number_sticker = 0
+    number_row = 1
+    while (A3[1] - y) > HEIGHT_STICKER:
 
-def draw_stickers(plot, string, path_to_stick):
-    pass
+        if number_sticker == max_number_sticker:
+            break
 
-def create_stickers(
-        path_to_stick: str,
-        num_stickers: int,
-        path_to_save: str | None,
-):
-    c = canvas.Canvas(path_to_save, pagesize=A3)
+        if WIDTH_STICKER > (A3[0] - x):
+            x = X_PAD
+            y += Y_DISTANCE + HEIGHT_STICKER
+            number_row += 1
+            continue
 
-    # draw reference points
-    c.setFillColorCMYK(0.07, 0.03, 0.0, 0.13)
-    c.circle(
-        x_cen=2 * X_DISTANCE + DIAMETER_POINT // 2,
-        y_cen=2 * X_DISTANCE + DIAMETER_POINT,
-        r=DIAMETER_POINT // 2, fill=1)
-    c.circle(
-        x_cen=11 * X_DISTANCE + DIAMETER_POINT + 6 * WIDTH_STICKER,
-        y_cen=2 * X_DISTANCE + DIAMETER_POINT,
-        r=DIAMETER_POINT // 2, fill=1)
+        draw_sticker(
+            plot=c, x=x, y=y,
+            path_to_stick=path_to_stick, height=HEIGHT_STICKER, width=WIDTH_STICKER
+        )
 
-    max_cnt_rows = num_stickers // 6
-    if max_cnt_rows != 0:
+        text = "MCScap PROFESSIONAL, L\nMod: 15E-03M25\nmks.ru"
 
-        c.circle(
-            x_cen=2 * X_DISTANCE + DIAMETER_POINT // 2,
-            y_cen=2 * X_DISTANCE + 2 * DIAMETER_POINT + max_cnt_rows * (3 * X_DISTANCE + HEIGHT_STICKER),
-            r=DIAMETER_POINT // 2, fill=1)
+        draw_center_text(
+            plot=c, x=x, y=y + 22 * mm, text=text, max_width=WIDTH_STICKER
+        )
 
-        c.circle(
-            x_cen=11 * X_DISTANCE + DIAMETER_POINT + 6 * WIDTH_STICKER,
-            y_cen=2 * X_DISTANCE + 2 * DIAMETER_POINT + max_cnt_rows * (3 * X_DISTANCE + HEIGHT_STICKER),
-            r=DIAMETER_POINT // 2, fill=1)
+        draw_serial(
+            plot=c, x=x, y=y, serial="123443"
+        )
 
-    # draw stickers
-    x, y = 4 * X_DISTANCE + DIAMETER_POINT, Y_DISTANCE
-    for idx in range(max_cnt_rows):
-        for idj in range(6):
-            c.drawImage(image=path_to_stick, x=x, y=y, width=WIDTH_STICKER, height=HEIGHT_STICKER)
-            x += X_DISTANCE + WIDTH_STICKER
-        x = 4 * X_DISTANCE + DIAMETER_POINT
-        y += Y_DISTANCE + HEIGHT_STICKER
-
-    for idx in range(num_stickers % 6):
-        c.drawImage(image=path_to_stick, x=x, y=y, width=WIDTH_STICKER, height=HEIGHT_STICKER)
         x += X_DISTANCE + WIDTH_STICKER
+        number_sticker += 1
+
+    # down left circle
+    draw_ref_circle(
+        plot=c,
+        x_cen=X_DISTANCE + DIAMETER_POINT // 2, y_cen=2*Y_PAD + DIAMETER_POINT // 2,
+        radius=DIAMETER_POINT // 2
+    )
+    # down right circle
+    draw_ref_circle(
+        plot=c,
+        x_cen=A3[0] - 2 * mm - DIAMETER_POINT // 2,
+        y_cen=2*Y_PAD + DIAMETER_POINT // 2,
+        radius=DIAMETER_POINT // 2
+    )
+
+    if number_row > 1:
+        # up left circle
+        draw_ref_circle(
+            plot=c,
+            x_cen=X_DISTANCE + DIAMETER_POINT // 2,
+            y_cen=number_row * Y_PAD + HEIGHT_STICKER * (number_row - 1) + X_PAD,
+            radius=DIAMETER_POINT // 2
+        )
+        # up right circle
+        draw_ref_circle(
+            plot=c,
+            x_cen=A3[0] - 2 * mm - DIAMETER_POINT // 2,
+            y_cen=number_row * Y_PAD + HEIGHT_STICKER * (number_row - 1) + X_PAD,
+            radius=DIAMETER_POINT // 2,
+        )
 
     c.save()
 
 
 if __name__ == "__main__":
-    create_stickers(
-        path_to_stick="sticker.jpg",
-        path_to_save="output.pdf",
-        num_stickers=23,
-
+    main(
+        max_number_sticker=7, path_to_save="output.pdf",
+        path_to_stick="sticker.jpg"
     )
+    # # read_xl(path_to_xl="template/template_sn.xlsx")
