@@ -10,4 +10,4 @@ def read_xl(path_to_xl: str):
 
 
 if __name__ == "__main__":
-    read_xl(path_to_xl="template/template_sn.xlsx")
+    read_xl(path_to_xl="input/template_sn.xlsx")

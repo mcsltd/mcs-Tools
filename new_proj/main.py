@@ -2,7 +2,7 @@ from reportlab.lib.pagesizes import A3
 from reportlab.lib.units import mm, cm
 from reportlab.pdfgen.canvas import Canvas
 
-from new_proj.draw import draw_sticker, draw_center_text, draw_serial, draw_ref_circle
+from new_proj.draw import draw_sticker, draw_center_text, draw_serial, draw_ref_circle, draw_lot
 from read_template import read_xl
 
 # sticker size
@@ -49,8 +49,8 @@ def main(max_number_sticker, path_to_stick, path_to_save=None):
             plot=c, x=x, y=y + 22 * mm, text=text, max_width=WIDTH_STICKER
         )
 
-        draw_serial(
-            plot=c, x=x, y=y, serial="123443"
+        draw_lot(
+            plot=c, x=x, y=y, lot="123443"
         )
 
         x += X_DISTANCE + WIDTH_STICKER
@@ -94,4 +94,4 @@ if __name__ == "__main__":
         max_number_sticker=7, path_to_save="output.pdf",
         path_to_stick="sticker.jpg"
     )
-    # # read_xl(path_to_xl="template/template_sn.xlsx")
+    # # read_xl(path_to_xl="input/template_sn.xlsx")
