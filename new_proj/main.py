@@ -1,3 +1,5 @@
+import ezdxf
+
 from reportlab.lib.pagesizes import A3
 from reportlab.lib.units import mm, cm
 from reportlab.pdfgen.canvas import Canvas
@@ -21,7 +23,12 @@ X_PAD = 14 * mm
 Y_PAD = 3 * mm
 
 
-def main(max_number_sticker, path_to_stick, path_to_save=None):
+def main(max_number_sticker, path_to_stick, path_to_cut_counter, path_to_save=None):
+    # dxf
+    doc = ezdxf.new()
+    msp = doc.modelspace()
+
+    # pdf
     c = Canvas(path_to_save, pagesize=A3)
 
     x, y = X_PAD, Y_PAD
@@ -56,42 +63,57 @@ def main(max_number_sticker, path_to_stick, path_to_save=None):
         x += X_DISTANCE + WIDTH_STICKER
         number_sticker += 1
 
-    # down left circle
+    # down left circle in pdf
     draw_ref_circle(
         plot=c,
-        x_cen=X_DISTANCE + DIAMETER_POINT // 2, y_cen=2*Y_PAD + DIAMETER_POINT // 2,
-        radius=DIAMETER_POINT // 2
+        x_cen=X_DISTANCE + DIAMETER_POINT / 2, y_cen=2*Y_PAD + DIAMETER_POINT / 2,
+        radius=DIAMETER_POINT / 2
     )
-    # down right circle
+    # down left circle in dxf
+    msp.add_circle(
+        (X_DISTANCE + DIAMETER_POINT / 2, 2*Y_PAD + DIAMETER_POINT / 2),
+        DIAMETER_POINT / 2
+    )
+
+    # down right circle in pdf
     draw_ref_circle(
         plot=c,
-        x_cen=A3[0] - 2 * mm - DIAMETER_POINT // 2,
-        y_cen=2*Y_PAD + DIAMETER_POINT // 2,
-        radius=DIAMETER_POINT // 2
+        x_cen=A3[0] - 2 * mm - DIAMETER_POINT / 2,
+        y_cen=2*Y_PAD + DIAMETER_POINT / 2,
+        radius=DIAMETER_POINT / 2
+    )
+    # down right circle in dxf
+    msp.add_circle(
+        (A3[0] - 2 * mm - DIAMETER_POINT / 2, 2*Y_PAD + DIAMETER_POINT / 2),
+        DIAMETER_POINT / 2
     )
 
     if number_row > 1:
         # up left circle
         draw_ref_circle(
             plot=c,
-            x_cen=X_DISTANCE + DIAMETER_POINT // 2,
+            x_cen=X_DISTANCE + DIAMETER_POINT / 2,
             y_cen=number_row * Y_PAD + HEIGHT_STICKER * (number_row - 1) + X_PAD,
-            radius=DIAMETER_POINT // 2
+            radius=DIAMETER_POINT / 2
         )
         # up right circle
         draw_ref_circle(
             plot=c,
-            x_cen=A3[0] - 2 * mm - DIAMETER_POINT // 2,
+            x_cen=A3[0] - 2 * mm - DIAMETER_POINT / 2,
             y_cen=number_row * Y_PAD + HEIGHT_STICKER * (number_row - 1) + X_PAD,
-            radius=DIAMETER_POINT // 2,
+            radius=DIAMETER_POINT / 2,
         )
 
+    # save pdf with stickers
     c.save()
+    # save dxf file
+    doc.saveas("output.dxf")
 
 
 if __name__ == "__main__":
     main(
         max_number_sticker=7, path_to_save="output.pdf",
-        path_to_stick="sticker.jpg"
+        path_to_stick="sticker.jpg",
+        path_to_cut_counter=...
     )
     # # read_xl(path_to_xl="input/template_sn.xlsx")
