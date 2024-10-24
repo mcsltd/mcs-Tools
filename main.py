@@ -15,7 +15,7 @@ PATH_TO_CONFIG = os.environ["HOMEDRIVE"] + os.environ["HOMEPATH"] + f"\\.mcs-too
 def set_config(path_to_config, path_to_template):
     """
     Setting the path to the file with .txt templates.
-    :param template_file_name: name of template file
+    :param template_file_name: name of input file
     :return:
     """
     # Create config
@@ -40,7 +40,7 @@ def get_config(path_to_config):
 def load_preference():
     """
     load txt file from config.ini.
-    :return: str path to txt template file.
+    :return: str path to txt input file.
     """
     # create dir config is not exists
     if not os.path.exists(PATH_TO_DIR_CONFIG):
@@ -63,12 +63,12 @@ def load_preference():
             path_to_template = None
             return path_to_template
 
-        # get file .txt template
+        # get file .txt input
         path_to_template = path_to_template
-        # create config file and set path to txt template file
+        # create config file and set path to txt input file
         set_config(PATH_TO_CONFIG, path_to_template)
 
-    # get path to txt template
+    # get path to txt input
     path_to_template = get_config(PATH_TO_CONFIG)
     return path_to_template
 
@@ -297,7 +297,7 @@ class App:
 
         if new_template_txt != "":
             self.template_txt = new_template_txt
-            # set new path to txt template file in config.ini
+            # set new path to txt input file in config.ini
             set_config(
                 path_to_config=PATH_TO_CONFIG,
                 path_to_template=self.template_txt
@@ -373,13 +373,13 @@ if __name__ == "__main__":
     else:
         showwarning(
             title="Не найден .txt файл с шаблонами замены",
-            message="Не найден файл template.txt."
-                    " Поместите в ту же директорию, в которой запущена программа файл template.txt.\n"
+            message="Не найден файл input.txt."
+                    " Поместите в ту же директорию, в которой запущена программа файл input.txt.\n"
                     "Работа программы прекращена."
         )
 
-    # set path to template txt file
+    # set path to input txt file
     # set_config(
-    #     template_file_name="./template.txt"
+    #     template_file_name="./input.txt"
     # )
 
