@@ -21,6 +21,7 @@ def draw_serial(plot: Canvas, x: int, y: int, serial: str):
     plot.setLineWidth(width=7)
     plot.drawString(x + 15.75 * mm, y + 10.5 * mm, "SN")
     plot.drawString(x + 22 * mm, y + 10.5 * mm, serial)
+    plot.setLineWidth(width=1)
 
 
 def draw_lot(plot: Canvas, x: int, y: int, lot: str):
@@ -29,6 +30,7 @@ def draw_lot(plot: Canvas, x: int, y: int, lot: str):
     plot.setLineWidth(width=7)
     plot.drawString(x + 15 * mm, y + 10.5 * mm, "LOT")
     plot.drawString(x + 22 * mm, y + 10.5 * mm, lot)
+    plot.setLineWidth(width=1)
 
 
 def draw_center_text(
