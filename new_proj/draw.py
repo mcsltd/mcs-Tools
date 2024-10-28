@@ -18,6 +18,7 @@ def draw_sticker(plot: Canvas, path_to_stick, x, y, width, height):
 def draw_serial(plot: Canvas, x: int, y: int, serial: str):
     plot.setFillColorCMYK(0.03, 0.02, 0.03, 0)
     plot.setFont(psfontname='Arial', size=7)
+    plot.setLineWidth(width=7)
     plot.drawString(x + 15.75 * mm, y + 10.5 * mm, "SN")
     plot.drawString(x + 22 * mm, y + 10.5 * mm, serial)
 
@@ -25,7 +26,8 @@ def draw_serial(plot: Canvas, x: int, y: int, serial: str):
 def draw_lot(plot: Canvas, x: int, y: int, lot: str):
     plot.setFillColorCMYK(0.03, 0.02, 0.03, 0)
     plot.setFont(psfontname='Arial', size=7)
-    plot.drawString(x + 15.25 * mm, y + 10.5 * mm, "LOT")
+    plot.setLineWidth(width=7)
+    plot.drawString(x + 15 * mm, y + 10.5 * mm, "LOT")
     plot.drawString(x + 22 * mm, y + 10.5 * mm, lot)
 
 
