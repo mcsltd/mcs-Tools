@@ -58,3 +58,8 @@ def draw_ref_circle(plot: Canvas, x_cen, y_cen, radius):
         r=radius,
         fill=1
     )
+
+
+def draw_ref_point_horizontal(plot: Canvas, x_cen_1, x_cen_2, y_cen, radius):
+    draw_ref_circle(plot=plot, x_cen=x_cen_1, y_cen=y_cen, radius=radius)
+    draw_ref_circle(plot=plot, x_cen=x_cen_2, y_cen=y_cen, radius=radius)
