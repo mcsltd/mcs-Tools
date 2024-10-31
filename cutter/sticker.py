@@ -5,15 +5,16 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from svglib.svglib import svg2rlg
 
-# t = {"text": ..., "x": ..., "y": ..., "rotate", ..., "font": ..., "fontSize": ..., }
+import ezdxf
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
 
 class Sticker:
 
-    def __init__(self, width, height, path_to_sticker, text, inverted=False):
+    def __init__(self, width, height, path_to_sticker, path_to_dxf, text, inverted=False):
         self.image = svg2rlg(path_to_sticker)
+        self.cutter = ezdxf.readfile(path_to_dxf)
 
         self.width = width
         self.height = height
@@ -23,7 +24,9 @@ class Sticker:
 
     # function for draw in pdf
 
-    def draw_sticker_pdf(self, canvas: Canvas, x, y):
+    def draw_sticker_pdf(self, canvas: Canvas, x, y, font_name="Arial", font_size=7,):
+        canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
+        canvas.setFont(psfontname=font_name, size=font_size)
         # draw sticker
         renderPDF.draw(self.image, canvas, x, y)
         if self.text is not None:
@@ -45,14 +48,13 @@ class Sticker:
                 for t in self.text:
                     self.draw_text_pdf(canvas=canvas, x=x+t["x"], y=y+t["y"], text=t["text"])
 
-    def draw_text_pdf(self, canvas, x, y, text, font_name="Arial", font_size=7,):
-        canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
-        text_width = canvas.stringWidth(text, font_name, font_size)
-        canvas.setFont(psfontname=font_name, size=font_size)
+    def draw_text_pdf(self, canvas, x, y, text):
+        text_width = canvas.stringWidth(text)
         canvas.drawString(x + int((self.width - text_width)) / 2, y, text)
 
     # function for draw in dxf
     ...
+
 
 class RefPoint:
     def __init__(self, radius):
@@ -63,3 +65,22 @@ class RefPoint:
 
     def draw_ref_point_dxf(self, canvas: Canvas, x_cen, y_cen):
         pass
+
+
+class Annotation:
+    def __init__(self):
+        pass
+
+    def draw_annotation_pdf(self, canvas, x, y, text, font_name="Arial", font_size=10):
+        canvas.saveState()
+
+        canvas.translate(x, y)
+        canvas.rotate(90)
+
+        canvas.setFillColorCMYK(0.4, 0.4, 0.4, 1)
+        canvas.setFont(psfontname=font_name, size=font_size)
+        canvas.drawString(0, 0, text)
+
+        canvas.restoreState()
+
+

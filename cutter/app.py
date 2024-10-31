@@ -6,7 +6,7 @@ import svglib
 from svglib.svglib import svg2rlg
 
 from cutter import read_data
-from cutter.sticker import Sticker
+from cutter.sticker import Sticker, Annotation
 from cutter.draw import draw_sticker, draw_hline_ref_points
 from cutter.read_data import read_txt
 
@@ -15,8 +15,12 @@ def main(
         stickers,
         dx, dy,
         point_radius,
+        annotation="TASK_0001 PAGE 1"
 ):
+    # new pdf file
     pdf = Canvas("output.pdf", pagesize=A3)
+    # new dxf file
+    ...
 
     x, y = point_radius * 2 + mm, 2 * mm
 
@@ -29,7 +33,7 @@ def main(
         x1_cen=point_radius, x2_cen=A3[0]-point_radius, y_cen=point_radius,
         radius=point_radius
     )
-
+    Annotation().draw_annotation_pdf(canvas=pdf, x=point_radius, y=A3[1]/2, text=annotation)
     while ind_sticker < len(stickers):
 
         # check filling on x
@@ -98,7 +102,9 @@ if __name__ == "__main__":
         if cnt % 2 == 0:
 
             sticks.append(Sticker(
-                path_to_sticker="template/reverse_sticker_sn.svg", width=46 * mm, height=28 * mm,
+                path_to_sticker="template/reverse_sticker_sn.svg",
+                path_to_dxf="template/reverse_sticker.dxf",
+                width=46 * mm, height=28 * mm,
                 text=[
                         {"text": t[0], "x": 0, "y": 24*mm,},
                         {"text": t[1], "x": 0, "y": 21*mm,},
@@ -109,7 +115,9 @@ if __name__ == "__main__":
             )
         else:
             sticks.append(Sticker(
-                path_to_sticker="template/sticker_sn.svg", width=46 * mm, height=28 * mm,
+                path_to_sticker="template/sticker_sn.svg",
+                path_to_dxf="template/reverse_sticker.dxf",
+                width=46 * mm, height=28 * mm,
                 text=[
                         {"text": t[0], "x": 0, "y": 24*mm,},
                         {"text": t[1], "x": 0, "y": 21*mm,},
