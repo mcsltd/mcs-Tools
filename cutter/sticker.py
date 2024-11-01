@@ -12,9 +12,8 @@ pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
 class Sticker:
 
-    def __init__(self, width, height, path_to_sticker, path_to_dxf, text, inverted=False):
+    def __init__(self, width, height, path_to_sticker, text, inverted=False):
         self.image = svg2rlg(path_to_sticker)
-        self.cutter = ezdxf.readfile(path_to_dxf)
 
         self.width = width
         self.height = height

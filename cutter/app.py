@@ -1,3 +1,5 @@
+import datetime
+
 from reportlab.lib.pagesizes import A3
 from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
@@ -5,9 +7,8 @@ from reportlab.pdfgen.canvas import Canvas
 import svglib
 from svglib.svglib import svg2rlg
 
-from cutter import read_data
 from cutter.sticker import Sticker, Annotation
-from cutter.draw import draw_sticker, draw_hline_ref_points
+from cutter.draw import draw_hline_ref_points
 from cutter.read_data import read_txt
 
 
@@ -15,7 +16,7 @@ def main(
         stickers,
         dx, dy,
         point_radius,
-        annotation="TASK_0001 PAGE 1"
+        annotation="TASK_0001"
 ):
     # new pdf file
     pdf = Canvas("output.pdf", pagesize=A3)
@@ -33,7 +34,15 @@ def main(
         x1_cen=point_radius, x2_cen=A3[0]-point_radius, y_cen=point_radius,
         radius=point_radius
     )
-    Annotation().draw_annotation_pdf(canvas=pdf, x=point_radius, y=A3[1]/2, text=annotation)
+
+    cnt_page = 1
+    annotation += " " + datetime.datetime.now().isoformat()[:-7].replace("T", " ")
+
+    Annotation().draw_annotation_pdf(
+        canvas=pdf, x=point_radius, y=A3[1]/2, text=annotation + f" PAGE {cnt_page}")
+    Annotation().draw_annotation_pdf(
+        canvas=pdf, x=A3[0]-point_radius, y=A3[1] / 2, text=annotation + f" PAGE {cnt_page}")
+
     while ind_sticker < len(stickers):
 
         # check filling on x
@@ -43,6 +52,7 @@ def main(
 
             # check filling on y
             if y + stickers[ind_sticker].height > A3[1]:
+
                 draw_hline_ref_points(
                     canvas=pdf,
                     x1_cen=point_radius, x2_cen=A3[0] - point_radius,
@@ -51,6 +61,12 @@ def main(
                 )  # draw line ref point in upstairs
 
                 pdf.showPage()  # create new page
+                cnt_page += 1
+
+                Annotation().draw_annotation_pdf(
+                    canvas=pdf, x=point_radius, y=A3[1] / 2, text=annotation + f" PAGE {cnt_page}")
+                Annotation().draw_annotation_pdf(
+                    canvas=pdf, x=A3[0] - point_radius, y=A3[1] / 2, text=annotation + f" PAGE {cnt_page}")
 
                 cnt_row = 1
                 x, y = point_radius * 2 + mm, 2 * mm
@@ -80,19 +96,6 @@ def main(
 
 
 if __name__ == "__main__":
-    paths_to_sticker = ["template/sticker_sn.svg", "template/reverse_sticker_sn.svg"]
-    path_to_sn = "template/sn.svg"
-    path_to_lot = "template/lot.svg"
-
-    path_to_data = "input/sample.txt"
-
-    # example for read data
-    # t = {"text": ..., "x": ..., "y": ..., "rotate": True, }
-    # text = [
-    #     {"text": "MCScap PROFESSIONAL, L,\n Mod: 15E-03M25\n mks.ru\n", "x": 132, "y": "fsdf", "rotate": 1},
-    #     {"text": "24123", "x":123, "y": 234}
-    # ]
-
     # read data for stickers
     text = read_txt("input/sample.txt")
 
@@ -103,26 +106,24 @@ if __name__ == "__main__":
 
             sticks.append(Sticker(
                 path_to_sticker="template/reverse_sticker_sn.svg",
-                path_to_dxf="template/reverse_sticker.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
-                        {"text": t[0], "x": 0, "y": 24*mm,},
-                        {"text": t[1], "x": 0, "y": 21*mm,},
-                        {"text": t[2], "x": 0, "y": 18*mm,},
-                        {"text": t[3], "x": 2.5*mm, "y": 11.5*mm,}
+                        {"text": t[0], "x": 0, "y": 24*mm},
+                        {"text": t[1], "x": 0, "y": 21*mm},
+                        {"text": t[2], "x": 0, "y": 18*mm},
+                        {"text": t[3], "x": 2.5*mm, "y": 11.5*mm}
                     ],
                 inverted=True)
             )
         else:
             sticks.append(Sticker(
                 path_to_sticker="template/sticker_sn.svg",
-                path_to_dxf="template/reverse_sticker.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
-                        {"text": t[0], "x": 0, "y": 24*mm,},
-                        {"text": t[1], "x": 0, "y": 21*mm,},
-                        {"text": t[2], "x": 0, "y": 18*mm,},
-                        {"text": t[3], "x": 2.5*mm, "y": 11.5*mm,}
+                        {"text": t[0], "x": 0, "y": 24*mm},
+                        {"text": t[1], "x": 0, "y": 21*mm},
+                        {"text": t[2], "x": 0, "y": 18*mm},
+                        {"text": t[3], "x": 2.5*mm, "y": 11.5*mm}
                     ])
             )
         cnt += 1
