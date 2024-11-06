@@ -242,7 +242,7 @@ def get_template_excel_file(filename):
     """
     Getting replacement templates for Designator in a CSV file
     :param filename: Excel file str
-    :return: substitution template dict
+    :return: substitution input dict
     """
     # head of columns in excel file
     COLUMN_REFERENCE = "Reference"
@@ -281,7 +281,7 @@ def get_template_excel_file(filename):
         if str(part) != "nan":
             last_part = part
 
-        # generating a template from an Excel file
+        # generating a input from an Excel file
         for r in ref:
             template[r] = {
                 CSV_COLUMN_FOOTPRINT: last_foot,
@@ -309,7 +309,7 @@ def processing_excel_file(csvfile, file_xls_template, name_save_dir=None):
     """
     A function that processes a .csv file with a .xls file
     :param csvfile:
-    :param template:
+    :param input:
     :param name_save_dir:
     :return:
     """
@@ -318,7 +318,7 @@ def processing_excel_file(csvfile, file_xls_template, name_save_dir=None):
     template = get_template_excel_file(file_xls_template)
     data = get_data_csv_file(csvfile)  # data for processing
 
-    sink = []  # lines from the processed csv file that differ from the template
+    sink = []  # lines from the processed csv file that differ from the input
 
     name_csv_file = csvfile[csvfile.rfind("/") + 1:]
     # the name of the new file with changes
@@ -335,11 +335,11 @@ def processing_excel_file(csvfile, file_xls_template, name_save_dir=None):
                 # if there are differences, keep them
                 sink.append(row.copy())
 
-                # change the value in the Footprint column to the value in the same column from the template
+                # change the value in the Footprint column to the value in the same column from the input
                 row[COL_FOOTPRINT] = template[dsg][COL_FOOTPRINT]
 
                 if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
-                    # change the value in the Footprint column to the value in the same column from the template
+                    # change the value in the Footprint column to the value in the same column from the input
                     row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
     if len(sink) != 0:

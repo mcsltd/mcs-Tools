@@ -2,7 +2,7 @@ import configparser
 from datetime import datetime
 from tkinter import filedialog as fd
 from tkinter.messagebox import *
-from editor import *
+from ParserSMD.editor import *
 from file_processing import *
 from tkinter import ttk
 

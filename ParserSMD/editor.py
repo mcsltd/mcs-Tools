@@ -14,7 +14,7 @@ class Editor:
         # setup UI app
         self._set_ui()
 
-        # show content template file in text panel
+        # show content input file in text panel
         self._get_file_content()
         pass
 
@@ -79,16 +79,16 @@ class Editor:
                 if t.split() != [] and template[0] == t.split()[0]:
                     showerror(
                         title="Найден похожий шаблон",
-                        message=f"Для {template[0]} найден похожий элемент в файле шаблонов template.txt"
+                        message=f"Для {template[0]} найден похожий элемент в файле шаблонов input.txt"
                     )
                     return
 
             self.text.configure(state=NORMAL)
-            # insert template in Text widget
+            # insert input in Text widget
             self.text.insert(END, "\n" + " ".join(template))
             self.text.configure(state=DISABLED)
 
-            # save template in txt
+            # save input in txt
             with open(self.name_file, "w") as file:
                 file.write(self.text.get(1.0, END))
 
@@ -135,7 +135,7 @@ class Editor:
         else:
             showinfo(
                 title="Шаблон не найден",
-                message="Шаблон не найден в файле template.txt"
+                message="Шаблон не найден в файле input.txt"
             )
 
 

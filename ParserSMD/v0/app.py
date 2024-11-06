@@ -190,7 +190,7 @@ class App:
                 log = "Выбранный файл не обработан...\n"
                 for func in self.funcs:
 
-                    # select a function depending on the template format
+                    # select a function depending on the input format
                     if "excel" in func.__name__ and "Excel" in self.btn_start.cget("text"):
                         self.info.insert(END, f"Обрабатывается файл {fn}\n\n")
                         log = func(fn, self.template_file.name, self.save_location)

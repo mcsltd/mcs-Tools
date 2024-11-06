@@ -295,7 +295,7 @@ class csvFile:
 
     def _get_template_txt_file(self, name_template):
         """
-        Get template from txt file.
+        Get input from txt file.
         :param name_template: str
         :return: dict
         """
@@ -341,11 +341,11 @@ class csvFile:
         COL_FOOTPRINT = "Footprint"
         COL_COMMENT = "Comment"
 
-        # get template from Excel file
+        # get input from Excel file
         template = self._get_template_excel_file(file_excel_template)
 
         data = get_data_csv_file(NAME_BUFFER_FILE)  # data for processing
-        sink = []  # lines from the processed csv file that differ from the template
+        sink = []  # lines from the processed csv file that differ from the input
 
         for row in data:
 
@@ -361,7 +361,7 @@ class csvFile:
                     sink.append(row.copy())
                     flag_add = False
 
-                    # change the value in the Footprint column to the value in the same column from the template
+                    # change the value in the Footprint column to the value in the same column from the input
                     row[COL_FOOTPRINT] = template[dsg][COL_FOOTPRINT]
 
                 if template[dsg][COL_COMMENT] != row[COL_COMMENT]:
@@ -371,7 +371,7 @@ class csvFile:
                         sink.append(row.copy())
                         flag_add = False
 
-                    # change the value in the Footprint column to the value in the same column from the template
+                    # change the value in the Footprint column to the value in the same column from the input
                     row[COL_COMMENT] = template[dsg][COL_COMMENT]
 
         with open(name_new_file, "w", newline="") as new_file, \
@@ -406,7 +406,7 @@ class csvFile:
         """
         Getting replacement templates for Designator in a CSV file
         :param filename: Excel file str
-        :return: substitution template dict
+        :return: substitution input dict
         """
         # head of columns in excel file
         COLUMN_REFERENCE = "Reference"
@@ -442,7 +442,7 @@ class csvFile:
             if str(part) != "nan":
                 last_part = part
 
-            # generating a template from an Excel file
+            # generating a input from an Excel file
             for r in ref:
                 template[r] = {
                     CSV_COLUMN_FOOTPRINT: last_foot,
@@ -473,7 +473,7 @@ def ex_proc_txt_file():
 
     d.txt_file_processing(
         name_save_dir=name_save_dir,
-        name_template="template.txt"
+        name_template="input.txt"
     )
 
 
