@@ -1,3 +1,4 @@
+import reportlab.pdfbase.pdfmetrics
 from reportlab.graphics import renderPDF
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
@@ -70,16 +71,11 @@ class Annotation:
     def __init__(self):
         pass
 
-    def draw_annotation_pdf(self, canvas, x, y, text, font_name="Arial", font_size=10):
-        canvas.saveState()
-
-        canvas.translate(x, y)
-        canvas.rotate(90)
-
+    def draw_annotation_pdf(self, canvas, x, y, text, font_name="Arial", font_size=9):
+        str_width = reportlab.pdfbase.pdfmetrics.stringWidth(text, font_name, font_size)
         canvas.setFillColorCMYK(0.4, 0.4, 0.4, 1)
         canvas.setFont(psfontname=font_name, size=font_size)
-        canvas.drawString(0, 0, text)
+        canvas.drawString(x - str_width / 2, y - font_size / 2, text)
 
-        canvas.restoreState()
 
 
