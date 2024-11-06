@@ -6,8 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
-# picture
+# files for project StickerCutter
 *.jpg
+*.svg
+*.pdf
+*.dxf
+*.txt
 
 # Distribution / packaging
 .Python
