@@ -7,11 +7,9 @@ from reportlab.lib.pagesizes import A3
 from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
 
-
 from StickerCutter.sticker import Sticker, Annotation
-from StickerCutter.draw import draw_hline_ref_points
+from StickerCutter.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
 from StickerCutter.read_data import read_txt
-
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,9 +29,13 @@ def main(
     msp = dxf.modelspace()
 
     # pad for draw annotate
-    x_pad, y_pad = 2 * point_radius + mm, point_radius + mm
+    x_pad, y_pad = 2 * point_radius, point_radius
     x, y = x_pad, y_pad
-    x_, y_ = 0, 0  # coord for dxf file
+
+    # offsets for the contour in the dxf file
+    dx_inner, dy_inner = 0.75, 0.5
+    # initial coordinates for sticker outlines
+    x_, y_ = dx_inner + (point_radius + mm) / mm, dy_inner + (point_radius + mm) / mm
 
     ind_sticker = 0
     cnt_row = 1
@@ -41,9 +43,15 @@ def main(
     # draw two ref point in below
     draw_hline_ref_points(
         canvas=pdf,
-        x1_cen=point_radius + mm, x2_cen=A3[0] - point_radius - mm,
-        y_cen=point_radius + mm,     # problem with draw?
+        x1_cen=point_radius, x2_cen=A3[0] - point_radius,
+        y_cen=point_radius,  # problem with draw?
         radius=point_radius
+    )
+    draw_hline_ref_points_dxf(
+        modelspace=msp,
+        x1_cen=0, x2_cen=(A3[0] - point_radius) / mm,
+        y_cen=y_,
+        radius=point_radius / mm
     )
 
     cnt_page = 1
@@ -51,9 +59,9 @@ def main(
 
     # draw annotation
     Annotation().draw_annotation_pdf(
-        canvas=pdf, x=A3[0]/2, y=point_radius, text=annotation + f" PAGE {cnt_page}")
+        canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
     Annotation().draw_annotation_pdf(
-        canvas=pdf, x=A3[0]/2, y=A3[1] - point_radius, text=annotation + f" PAGE {cnt_page}")
+        canvas=pdf, x=A3[0] / 2, y=A3[1] - point_radius, text=annotation + f" PAGE {cnt_page}")
 
     logging.info(f"Drawing stickers on the page: {cnt_page}.")
 
@@ -64,15 +72,14 @@ def main(
             x = x_pad
             y += stickers[ind_sticker].height + dy
 
-            x_ = 0
-            y_ += (stickers[ind_sticker].height + dy) / mm
+            x_ = dx_inner + (point_radius + mm) / mm
+            y_ += dy_inner + (stickers[ind_sticker].height + dy) / mm
 
             # check filling on y
             if y + stickers[ind_sticker].height > A3[1]:
-
                 draw_hline_ref_points(
                     canvas=pdf,
-                    x1_cen=point_radius + mm, x2_cen=A3[0] - point_radius - mm,
+                    x1_cen=point_radius, x2_cen=A3[0] - point_radius,
                     y_cen=cnt_row * stickers[ind_sticker].height + (cnt_row - 1) * dy - point_radius,
                     radius=point_radius
                 )  # draw line ref point in upstairs
@@ -84,7 +91,7 @@ def main(
 
                 # draw annotation
                 Annotation().draw_annotation_pdf(
-                    canvas=pdf, x=A3[0] / 2, y=point_radius, text=annotation + f" PAGE {cnt_page}")
+                    canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
                 Annotation().draw_annotation_pdf(
                     canvas=pdf, x=A3[0] / 2, y=A3[1] - point_radius, text=annotation + f" PAGE {cnt_page}")
 
@@ -104,17 +111,23 @@ def main(
         stickers[ind_sticker].draw_sticker_pdf(canvas=pdf, x=x, y=y)
         stickers[ind_sticker].draw_sticker_dxf(modelspace=msp, x=x_, y=y_)
 
-        x_ += (stickers[ind_sticker].width + dx) / mm
+        x_ += dx_inner + (stickers[ind_sticker].width + dx) / mm
         x += stickers[ind_sticker].width + dx
         ind_sticker += 1
 
     if cnt_row > 1:
         draw_hline_ref_points(
             canvas=pdf,
-            x1_cen=point_radius + mm, x2_cen=A3[0] - point_radius - mm,
+            x1_cen=point_radius, x2_cen=A3[0] - point_radius,
             y_cen=cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius,
             radius=point_radius
         )  # draw line ref point in upstairs
+        draw_hline_ref_points_dxf(
+            modelspace=msp, x1_cen=0, x2_cen=(A3[0] - point_radius) / mm,
+            y_cen=(cnt_row * stickers[ind_sticker - 1].height + (
+                        cnt_row - 1) * dy - point_radius) / mm + dy_inner * cnt_row,
+            radius=point_radius / mm
+        )
 
     if ind_sticker == len(stickers):
         logging.info(f"The program worked well. Number of drawn stickers: {ind_sticker}."
@@ -148,13 +161,13 @@ if __name__ == "__main__":
     for t in text:
         if cnt % 2 == 0:
             sticks.append(Sticker(
-                path_to_sticker="template/reverse_sticker_sn.svg",
+                path_to_sticker="template/sticker_sn_reverse.svg",
                 path_to_dxf="template/sticker_reverse.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
-                        {"text": t[0], "x": 0, "y": 24*mm}, {"text": t[1], "x": 0, "y": 21*mm},
-                        {"text": t[2], "x": 0, "y": 18*mm}, {"text": t[3], "x": 2.5*mm, "y": 11.5*mm}
-                    ],
+                    {"text": t[0], "x": 0, "y": 24 * mm}, {"text": t[1], "x": 0, "y": 21 * mm},
+                    {"text": t[2], "x": 0, "y": 18 * mm}, {"text": t[3], "x": 2.5 * mm, "y": 11.5 * mm}
+                ],
                 inverted=True)
             )
         else:
@@ -163,9 +176,9 @@ if __name__ == "__main__":
                 path_to_dxf="template/sticker.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
-                        {"text": t[0], "x": 0, "y": 24*mm}, {"text": t[1], "x": 0, "y": 21*mm},
-                        {"text": t[2], "x": 0, "y": 18*mm}, {"text": t[3], "x": 2.5*mm, "y": 11.5*mm}
-                    ])
+                    {"text": t[0], "x": 0, "y": 24 * mm}, {"text": t[1], "x": 0, "y": 21 * mm},
+                    {"text": t[2], "x": 0, "y": 18 * mm}, {"text": t[3], "x": 2.5 * mm, "y": 11.5 * mm}
+                ])
             )
         cnt += 1
 
@@ -173,9 +186,9 @@ if __name__ == "__main__":
         logging.info("Start program...")
         main(
             stickers=sticks,
-            dx=-7*mm,
-            dy=1*mm,
-            point_radius=3.5*mm,
+            dx=-7 * mm,
+            dy=1 * mm,
+            point_radius=3.5 * mm,
             dir_to_save=to_save,
         )
     else:
