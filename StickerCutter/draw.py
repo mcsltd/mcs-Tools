@@ -9,13 +9,13 @@ def draw_hline_ref_points(canvas: Canvas, x1_cen, x2_cen, y_cen, radius):
     canvas.circle(x_cen=x2_cen, y_cen=y_cen, r=radius, fill=1)
 
 
-def draw_hline_ref_points_dxf(modelspace: Modelspace,x1_cen, x2_cen, y_cen, radius):
+def draw_hline_ref_points_dxf(modelspace: Modelspace, x1_cen, x2_cen, y_cen, radius):
     modelspace.add_circle(
         center=(x1_cen, y_cen),
-        radius=radius
+        radius=radius,
     )
     modelspace.add_circle(
         center=(x2_cen, y_cen),
-        radius=radius
+        radius=radius,
     )
 

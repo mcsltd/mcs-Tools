@@ -29,13 +29,8 @@ def main(
     msp = dxf.modelspace()
 
     # pad for draw annotate
-    x_pad, y_pad = 2 * point_radius, point_radius
+    x_pad, y_pad = 2 * point_radius + mm, point_radius
     x, y = x_pad, y_pad
-
-    # offsets for the contour in the dxf file
-    dx_inner, dy_inner = 0.75, 0.5
-    # initial coordinates for sticker outlines
-    x_, y_ = dx_inner + (point_radius + mm) / mm, dy_inner + (point_radius + mm) / mm
 
     ind_sticker = 0
     cnt_row = 1
@@ -45,13 +40,20 @@ def main(
         canvas=pdf,
         x1_cen=point_radius, x2_cen=A3[0] - point_radius,
         y_cen=point_radius,  # problem with draw?
-        radius=point_radius
+        radius=point_radius,
     )
+
+    # offsets for the contour in the dxf file
+    dx_inner, dy_inner = 0.5, 0.25
+    # initial coordinates for sticker outlines
+    x_, y_ = x_pad / mm + dx_inner, y_pad / mm + dy_inner
+
+    # draw two ref point in below in pdf file
     draw_hline_ref_points_dxf(
         modelspace=msp,
-        x1_cen=0, x2_cen=(A3[0] - point_radius) / mm,
-        y_cen=y_,
-        radius=point_radius / mm
+        x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
+        y_cen=point_radius / mm,
+        radius=point_radius / mm,
     )
 
     cnt_page = 1
@@ -60,49 +62,54 @@ def main(
     # draw annotation
     Annotation().draw_annotation_pdf(
         canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
-    Annotation().draw_annotation_pdf(
-        canvas=pdf, x=A3[0] / 2, y=A3[1] - point_radius, text=annotation + f" PAGE {cnt_page}")
 
     logging.info(f"Drawing stickers on the page: {cnt_page}.")
 
     while ind_sticker < len(stickers):
 
         # check filling on x and y
-        if x + stickers[ind_sticker].width + 2 * point_radius > A3[0]:
+        if x + stickers[ind_sticker].width + x_pad > A3[0]:
+            # carriage return to new line (pfd)
             x = x_pad
             y += stickers[ind_sticker].height + dy
 
-            x_ = dx_inner + (point_radius + mm) / mm
+            # carriage return to new line (dxf)
+            x_ = x_pad / mm + dx_inner
             y_ += dy_inner + (stickers[ind_sticker].height + dy) / mm
 
             # check filling on y
-            if y + stickers[ind_sticker].height > A3[1]:
+            if y + stickers[ind_sticker].height + y_pad > A3[1]:
                 draw_hline_ref_points(
                     canvas=pdf,
                     x1_cen=point_radius, x2_cen=A3[0] - point_radius,
                     y_cen=cnt_row * stickers[ind_sticker].height + (cnt_row - 1) * dy - point_radius,
                     radius=point_radius
-                )  # draw line ref point in upstairs
+                )  # draw line ref point in upstairs (pdf)
+
+                # draw annotation upstairs
+                Annotation().draw_annotation_pdf(
+                    canvas=pdf,
+                    x=A3[0] / 2, y=cnt_row * stickers[ind_sticker - 1].height + cnt_row * dy + y_pad + 2 * mm,
+                    text=annotation + f" PAGE {cnt_page}"
+                )
 
                 pdf.showPage()  # create new page
                 cnt_page += 1
 
                 logging.info(f"Drawing stickers on the page: {cnt_page}.")
 
-                # draw annotation
+                # draw annotation below
                 Annotation().draw_annotation_pdf(
                     canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
-                Annotation().draw_annotation_pdf(
-                    canvas=pdf, x=A3[0] / 2, y=A3[1] - point_radius, text=annotation + f" PAGE {cnt_page}")
 
                 cnt_row = 1
-                x, y = x_pad, y_pad
+                y = y_pad
                 # draw two ref point in below
                 draw_hline_ref_points(
                     canvas=pdf,
-                    x1_cen=point_radius + mm, x2_cen=A3[0] - point_radius - mm,
-                    y_cen=point_radius + mm,  # problem with draw?
-                    radius=point_radius
+                    x1_cen=point_radius, x2_cen=A3[0] - point_radius,
+                    y_cen=point_radius,  # problem with draw?
+                    radius=point_radius,
                 )
                 continue
             cnt_row += 1
@@ -111,8 +118,8 @@ def main(
         stickers[ind_sticker].draw_sticker_pdf(canvas=pdf, x=x, y=y)
         stickers[ind_sticker].draw_sticker_dxf(modelspace=msp, x=x_, y=y_)
 
-        x_ += dx_inner + (stickers[ind_sticker].width + dx) / mm
-        x += stickers[ind_sticker].width + dx
+        x += stickers[ind_sticker].width + dx                           # pdf file
+        x_ += dx_inner + (stickers[ind_sticker].width + dx) / mm        # dxf file
         ind_sticker += 1
 
     if cnt_row > 1:
@@ -123,10 +130,15 @@ def main(
             radius=point_radius
         )  # draw line ref point in upstairs
         draw_hline_ref_points_dxf(
-            modelspace=msp, x1_cen=0, x2_cen=(A3[0] - point_radius) / mm,
-            y_cen=(cnt_row * stickers[ind_sticker - 1].height + (
-                        cnt_row - 1) * dy - point_radius) / mm + dy_inner * cnt_row,
+            modelspace=msp, x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
+            y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius) / mm,
             radius=point_radius / mm
+        )
+        # add annotation upstairs
+        Annotation().draw_annotation_pdf(
+            canvas=pdf,
+            x=A3[0] / 2, y=cnt_row * stickers[ind_sticker - 1].height + cnt_row * dy + y_pad + 2 * mm,
+            text=annotation + f" PAGE {cnt_page}"
         )
 
     if ind_sticker == len(stickers):
@@ -145,8 +157,7 @@ if __name__ == "__main__":
     # create dir with time processing for saving the result
     to_save = f"./output/{datetime.datetime.now().isoformat()[:-7].replace(':', '-')}"
     if not os.path.exists(to_save):
-        os.mkdir(to_save)
-
+        os.makedirs(to_save)
         logging.info(f"A directory has been created for saving files with stickers: {to_save}")
 
     # read data for stickers
@@ -166,7 +177,8 @@ if __name__ == "__main__":
                 width=46 * mm, height=28 * mm,
                 text=[
                     {"text": t[0], "x": 0, "y": 24 * mm}, {"text": t[1], "x": 0, "y": 21 * mm},
-                    {"text": t[2], "x": 0, "y": 18 * mm}, {"text": t[3], "x": 2.5 * mm, "y": 11.5 * mm}
+                    {"text": t[2], "x": 0, "y": 18 * mm},
+                    {"text": t[3], "x": 4 * mm, "y": 11.5 * mm}     # ToDo: place text on sticker without alignment
                 ],
                 inverted=True)
             )
@@ -177,7 +189,8 @@ if __name__ == "__main__":
                 width=46 * mm, height=28 * mm,
                 text=[
                     {"text": t[0], "x": 0, "y": 24 * mm}, {"text": t[1], "x": 0, "y": 21 * mm},
-                    {"text": t[2], "x": 0, "y": 18 * mm}, {"text": t[3], "x": 2.5 * mm, "y": 11.5 * mm}
+                    {"text": t[2], "x": 0, "y": 18 * mm},
+                    {"text": t[3], "x": 4 * mm, "y": 11.5 * mm}     # ToDo: place text on sticker without alignment
                 ])
             )
         cnt += 1

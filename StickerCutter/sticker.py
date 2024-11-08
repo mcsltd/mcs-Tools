@@ -83,7 +83,7 @@ class Sticker:
         canvas.drawString(x + int((self.width - text_width)) / 2, y, text)
 
     # function for draw in dxf
-    def draw_sticker_dxf(self, modelspace: Modelspace, x: float, y: float,):
+    def draw_sticker_dxf(self, modelspace: Modelspace, x: float, y: float):
         # draw the cutting outline in dxf
         for entity in self.entities:
             cp_entity = entity.copy()
