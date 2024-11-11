@@ -44,7 +44,7 @@ def main(
     )
 
     # offsets for the contour in the dxf file
-    dx_inner, dy_inner = 0.5, 0.25
+    dx_inner, dy_inner = 0.49, 0.52
     # initial coordinates for sticker outlines
     x_, y_ = x_pad / mm + dx_inner, y_pad / mm + dy_inner
 
@@ -75,7 +75,7 @@ def main(
 
             # carriage return to new line (dxf)
             x_ = x_pad / mm + dx_inner
-            y_ += dy_inner + (stickers[ind_sticker].height + dy) / mm
+            y_ += (stickers[ind_sticker].height + dy) / mm
 
             # check filling on y
             if y + stickers[ind_sticker].height + y_pad > A3[1]:
@@ -116,10 +116,10 @@ def main(
 
         # draw stickers
         stickers[ind_sticker].draw_sticker_pdf(canvas=pdf, x=x, y=y)
-        stickers[ind_sticker].draw_sticker_dxf(modelspace=msp, x=x_, y=y_)
+        stickers[ind_sticker].draw_sticker_dxf(modelspace=msp, x=x_ + dx_inner, y=y_ + dy_inner)
 
         x += stickers[ind_sticker].width + dx                           # pdf file
-        x_ += dx_inner + (stickers[ind_sticker].width + dx) / mm        # dxf file
+        x_ += (stickers[ind_sticker].width + dx) / mm        # dxf file
         ind_sticker += 1
 
     if cnt_row > 1:
@@ -134,12 +134,13 @@ def main(
             y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius) / mm,
             radius=point_radius / mm
         )
-        # add annotation upstairs
-        Annotation().draw_annotation_pdf(
-            canvas=pdf,
-            x=A3[0] / 2, y=cnt_row * stickers[ind_sticker - 1].height + cnt_row * dy + y_pad + 2 * mm,
-            text=annotation + f" PAGE {cnt_page}"
-        )
+
+    # add annotation upstairs
+    Annotation().draw_annotation_pdf(
+        canvas=pdf,
+        x=A3[0] / 2, y=cnt_row * stickers[ind_sticker - 1].height + cnt_row * dy + y_pad + 2 * mm,
+        text=annotation + f" PAGE {cnt_page}"
+    )
 
     if ind_sticker == len(stickers):
         logging.info(f"The program worked well. Number of drawn stickers: {ind_sticker}."
@@ -172,7 +173,7 @@ if __name__ == "__main__":
     for t in text:
         if cnt % 2 == 0:
             sticks.append(Sticker(
-                path_to_sticker="template/sticker_sn_reverse.svg",
+                path_to_sticker="template/combo sn reverse.svg",
                 path_to_dxf="template/sticker_reverse.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
@@ -184,7 +185,7 @@ if __name__ == "__main__":
             )
         else:
             sticks.append(Sticker(
-                path_to_sticker="template/sticker_sn.svg",
+                path_to_sticker="template/combo sn.svg",
                 path_to_dxf="template/sticker.dxf",
                 width=46 * mm, height=28 * mm,
                 text=[
