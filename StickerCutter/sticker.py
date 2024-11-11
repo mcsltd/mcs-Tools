@@ -62,6 +62,7 @@ class Sticker:
         canvas.setFont(psfontname=font_name, size=font_size)
         # draw sticker
         renderPDF.draw(self.image, canvas, x, y)
+        # draw text on sticker
         if self.text is not None:
             if self.inverted:
                 canvas.saveState()
@@ -71,17 +72,24 @@ class Sticker:
 
                 # draw text
                 for t in self.text:
-                    self.draw_text_pdf(canvas=canvas, x=t["x"], y=t["y"] , text=t["text"])
+                    self.draw_text_pdf(canvas=canvas, x=t["x"], y=t["y"], text=t["text"], align=t["align"])
 
                 canvas.restoreState()
             else:
                 # draw text
                 for t in self.text:
-                    self.draw_text_pdf(canvas=canvas, x=x+t["x"], y=y+t["y"], text=t["text"])
+                    self.draw_text_pdf(canvas=canvas, x=x+t["x"], y=y+t["y"], text=t["text"], align=t["align"])
 
-    def draw_text_pdf(self, canvas, x, y, text):
-        text_width = canvas.stringWidth(text)
-        canvas.drawString(x + int((self.width - text_width)) / 2, y, text)
+    def draw_text_pdf(self, canvas, x, y, text, align="center"):
+        if align == "left":
+            canvas.drawString(x, y, text)
+
+        if align == "center":
+            text_width = canvas.stringWidth(text)
+            canvas.drawString(x + int((self.width - text_width)) / 2, y, text)
+
+        if align == "right":
+            canvas.drawRightString(x, y, text)
 
     # function for draw in dxf
     def draw_sticker_dxf(self, modelspace: Modelspace, x: float, y: float):
