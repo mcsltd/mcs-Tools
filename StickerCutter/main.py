@@ -12,7 +12,6 @@ from StickerCutter.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
 from StickerCutter.read_data import read_txt
 
 
-
 def main(
         stickers,
         dx, dy,
@@ -107,7 +106,7 @@ def main(
                 dxf = ezdxf.new(stickers[0].doc_dxf.dxfversion)
                 msp = dxf.modelspace()
                 y_ = y_pad / mm + dy_inner  # reset variable y (dxf)
-                y = y_pad                   # reset variable y (pdf)
+                y = y_pad  # reset variable y (pdf)
                 cnt_row = 1
 
                 pdf.showPage()  # create new page
@@ -137,12 +136,12 @@ def main(
                 continue
             cnt_row += 1
 
-        # draw stickers
+        # draw stickers in pdf and dxf file
         stickers[ind_sticker].draw_sticker_pdf(canvas=pdf, x=x, y=y)
         stickers[ind_sticker].draw_sticker_dxf(modelspace=msp, x=x_ + dx_inner, y=y_ + dy_inner)
 
-        x += stickers[ind_sticker].width + dx                # pdf file
-        x_ += (stickers[ind_sticker].width + dx) / mm        # dxf file
+        x += stickers[ind_sticker].width + dx  # pdf file
+        x_ += (stickers[ind_sticker].width + dx) / mm  # dxf file
         ind_sticker += 1
 
     if cnt_row > 1:
@@ -167,7 +166,7 @@ def main(
 
     if ind_sticker == len(stickers):
         logger.info(f"The program worked well. Number of drawn stickers: {ind_sticker}."
-                     f" Total number of stickers: {len(stickers)}")
+                    f" Total number of stickers: {len(stickers)}")
         logger.info(f"The result is saved to file: {dir_to_save}/output.pdf.")
         logger.info(f"Сutting file saved in {dir_to_save}/output.dxf.")
     else:
@@ -176,11 +175,18 @@ def main(
     pdf.save()
 
     # save as output.dxf
-    if not os.path.exists(f"{dir_to_save}/output.dxf"):
-        dxf.saveas(f"{dir_to_save}/output.dxf")
+    if os.path.exists(f"{dir_to_save}/output.dxf"):
+
+        # print(f"{x+stickers[-1].width+x_pad=}, {y+stickers[-1].height+y_pad=}")
+        # print(f"{A3=}")
+
+        if not ((x + stickers[ind_sticker - 1].width + x_pad > A3[0])
+                and (y + 2 * stickers[ind_sticker - 1].height + y_pad > A3[1])):
+            # the output.dxf file already exists (it is assumed that it is completely filled)
+            dxf.saveas(f"{dir_to_save}/output_last_page.dxf")
+
     else:
-        # the output.dxf file already exists (it is assumed that it is completely filled)
-        dxf.saveas(f"{dir_to_save}/output_last_page.dxf")
+        dxf.saveas(f"{dir_to_save}/output.dxf")
 
 
 if __name__ == "__main__":
