@@ -1,0 +1,38 @@
+{
+  "annotation": "task 1",
+  "paper": {
+    "mm_width": 123,
+    "mm_height": 123,
+    "mm_x_pad": 10,
+    "mm_y_pad": 10
+  },
+  "stickers":
+  [
+    {
+    "path_to_sticker": "./sticker.svg",
+    "dxf":{"path_to_dxf": "./sticker.svg", "dx_inner": 0.49, "dy_inner": 0.52},
+    "mm_width": 123, "mm_height": 123,
+    "labels": [
+      {"mm_x": 0, "mm_y": 24, "align": "center"},
+      {"mm_x": 0, "mm_y": 21, "align": "center"},
+      {"mm_x": 0, "mm_y": 18, "align": "center"},
+      {"mm_x": 23, "mm_y": 11.5, "align": "left"}
+      ],
+    "sticker_offsets": {"dx": 1, "dy": 2},
+      "inverted": false
+    },
+    {
+    "path_to_sticker": "./sticker.svg",
+    "dxf":{"path_to_dxf": "./sticker.svg", "dx_inner": 0.49, "dy_inner": 0.52},
+    "mm_width": 123, "mm_height": 123,
+    "labels": [
+      {"mm_x": 0, "mm_y": 24, "align": "center"},
+      {"mm_x": 0, "mm_y": 21, "align": "center"},
+      {"mm_x": 0, "mm_y": 18, "align": "center"},
+      {"mm_x": 23, "mm_y": 11.5, "align": "left"}
+      ],
+    "sticker_offsets": {"dx": 1, "dy": 2},
+      "inverted": true
+    }
+  ]
+}

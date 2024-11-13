@@ -20,27 +20,24 @@ class Sticker:
     def __init__(
             self,
             # actual sticker sizes
-            width, height,
+            width: float, height: float,
 
             # paths to external files
-            path_to_sticker,
-            path_to_dxf,
+            path_to_sticker: str,
+            path_to_dxf: str,
 
             # information on the sticker
-            text,
-            inverted=False
+            text: list[dict],
+            inverted: bool = False
     ):
         # read file with pic sticker
         self.image = svg2rlg(path_to_sticker)
-
         # work with dxf file
         self.doc_dxf = ezdxf.readfile(path_to_dxf)
         self.msp_dxf = self.doc_dxf.modelspace()
-
         self.width = width
         self.height = height
         self.text = text
-
         self.inverted = inverted
 
         # get entities and left-down point
@@ -48,16 +45,16 @@ class Sticker:
             (float("-inf"), float("-inf")),
             (float("inf"), float("inf"))
         )
-        self.entities = select.bbox_outside(window, self.msp_dxf.entity_space.entities)     # elements in dxf file
-        self.min_pt = None      # left-down point (using for draw dxf cutting file)
+        self.entities = select.bbox_outside(window, self.msp_dxf.entity_space.entities)  # elements in dxf file
+        self.min_pt = None  # left-down point (using for draw dxf cutting file)
         for entity in self.entities:
             pt = np.min(np.array(entity.control_points), axis=0)
             if self.min_pt is None or np.all(pt < self.min_pt):
-                self.min_pt = pt    # anchor point
+                self.min_pt = pt  # anchor point
 
     # function for draw in pdf
 
-    def draw_sticker_pdf(self, canvas: Canvas, x, y, font_name="Arial", font_size=7,):
+    def draw_sticker_pdf(self, canvas: Canvas, x, y, font_name="Arial", font_size=7, ):
         canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
         canvas.setFont(psfontname=font_name, size=font_size)
         # draw sticker
@@ -78,7 +75,7 @@ class Sticker:
             else:
                 # draw text
                 for t in self.text:
-                    self.draw_text_pdf(canvas=canvas, x=x+t["x"], y=y+t["y"], text=t["text"], align=t["align"])
+                    self.draw_text_pdf(canvas=canvas, x=x + t["x"], y=y + t["y"], text=t["text"], align=t["align"])
 
     def draw_text_pdf(self, canvas, x, y, text, align="center"):
         if align == "left":
@@ -100,17 +97,6 @@ class Sticker:
             modelspace.add_foreign_entity(cp_entity)
 
 
-class RefPoint:
-    def __init__(self, radius):
-        pass
-
-    def draw_ref_point_pdf(self, canvas: Canvas, x_cen, y_cen):
-        pass
-
-    def draw_ref_point_dxf(self, canvas: Canvas, x_cen, y_cen):
-        pass
-
-
 class Annotation:
     def __init__(self):
         pass
@@ -120,6 +106,3 @@ class Annotation:
         canvas.setFillColorCMYK(0.4, 0.4, 0.4, 1)
         canvas.setFont(psfontname=font_name, size=font_size)
         canvas.drawString(x - str_width / 2, y - font_size / 2, text)
-
-
-

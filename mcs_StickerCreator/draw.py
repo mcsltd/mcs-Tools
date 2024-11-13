@@ -1,7 +1,6 @@
 from ezdxf.layouts import Modelspace
-from reportlab.graphics import renderPDF
 from reportlab.pdfgen.canvas import Canvas
-
+from reportlab.lib.pagesizes import A3
 
 def draw_hline_ref_points(canvas: Canvas, x1_cen, x2_cen, y_cen, radius):
     canvas.setFillColorCMYK(0.07, 0.03, 0.0, 0.13)

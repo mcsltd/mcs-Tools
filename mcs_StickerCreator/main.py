@@ -3,22 +3,29 @@ import os.path
 import logging
 import ezdxf
 
-from reportlab.lib.pagesizes import A3
-from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
 
-from StickerCutter.sticker import Sticker, Annotation
-from StickerCutter.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
-from StickerCutter.read_data import read_txt
+from mcs_StickerCreator.constants import mm, A3, RADIUS_REF_POINT, Sign
+from mcs_StickerCreator.sticker import Sticker, Annotation
+from mcs_StickerCreator.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
+from mcs_StickerCreator.read import read_txt
+
+# custom logger
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 
-def main(
-        stickers,
-        dx, dy,
-        point_radius,
-        dir_to_save,
-        annotation="TASK_0001",
-):
+def create_pdf_dxf(
+        stickers: list[Sticker],
+        dx: float, dy: float,
+        dir_to_save: str,
+        x_pad: float, y_pad: float,
+        dx_inner: float = 0.49, dy_inner: float = 0.52,
+        annotation: str = "TASK_0001"
+) -> None:
+    logger.info(f"The data file has been read. Total stickers: {len(stickers)}.")
+
     # new pdf file
     pdf = Canvas(f"{dir_to_save}/output.pdf", pagesize=A3)
 
@@ -27,28 +34,25 @@ def main(
     msp = dxf.modelspace()
 
     # pad for draw annotate
-    x_pad, y_pad = 2 * point_radius + mm, point_radius
     x, y = x_pad, y_pad
 
     # draw two ref point in below
     draw_hline_ref_points(
         canvas=pdf,
-        x1_cen=point_radius, x2_cen=A3[0] - point_radius,
-        y_cen=point_radius,  # problem with draw?
-        radius=point_radius,
+        x1_cen=RADIUS_REF_POINT, x2_cen=A3[0] - RADIUS_REF_POINT,
+        y_cen=RADIUS_REF_POINT,  # problem with draw?
+        radius=RADIUS_REF_POINT,
     )
 
-    # offsets for the contour in the dxf file
-    dx_inner, dy_inner = 0.49, 0.52
     # initial coordinates for sticker outlines
     x_, y_ = x_pad / mm + dx_inner, y_pad / mm + dy_inner
 
     # draw two ref point in below in pdf file
     draw_hline_ref_points_dxf(
         modelspace=msp,
-        x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
-        y_cen=point_radius / mm,
-        radius=point_radius / mm,
+        x1_cen=RADIUS_REF_POINT / mm, x2_cen=(A3[0] - RADIUS_REF_POINT) / mm,
+        y_cen=RADIUS_REF_POINT / mm,
+        radius=RADIUS_REF_POINT / mm,
     )
 
     annotation += " " + datetime.datetime.now().isoformat()[:-7].replace("T", " ")
@@ -60,7 +64,7 @@ def main(
 
     # draw annotation
     Annotation().draw_annotation_pdf(
-        canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
+        canvas=pdf, x=A3[0] / 2, y=RADIUS_REF_POINT / 2, text=annotation + f" PAGE {cnt_page}")
 
     logger.info(f"Drawing stickers on the page: {cnt_page}.")
 
@@ -81,15 +85,15 @@ def main(
                 # draw line ref point in upstairs (pdf)
                 draw_hline_ref_points(
                     canvas=pdf,
-                    x1_cen=point_radius, x2_cen=A3[0] - point_radius,
-                    y_cen=cnt_row * stickers[ind_sticker].height + (cnt_row - 1) * dy - point_radius,
-                    radius=point_radius
+                    x1_cen=RADIUS_REF_POINT, x2_cen=A3[0] - RADIUS_REF_POINT,
+                    y_cen=cnt_row * stickers[ind_sticker].height + (cnt_row - 1) * dy - RADIUS_REF_POINT,
+                    radius=RADIUS_REF_POINT
                 )
                 # add ref points upstairs dxf file
                 draw_hline_ref_points_dxf(
-                    modelspace=msp, x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
-                    y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius) / mm,
-                    radius=point_radius / mm
+                    modelspace=msp, x1_cen=RADIUS_REF_POINT / mm, x2_cen=(A3[0] - RADIUS_REF_POINT) / mm,
+                    y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - RADIUS_REF_POINT) / mm,
+                    radius=RADIUS_REF_POINT / mm
                 )
                 # draw annotation upstairs
                 Annotation().draw_annotation_pdf(
@@ -116,22 +120,22 @@ def main(
 
                 # draw annotation below
                 Annotation().draw_annotation_pdf(
-                    canvas=pdf, x=A3[0] / 2, y=point_radius / 2, text=annotation + f" PAGE {cnt_page}")
+                    canvas=pdf, x=A3[0] / 2, y=RADIUS_REF_POINT / 2, text=annotation + f" PAGE {cnt_page}")
 
                 # draw two ref point in below
                 draw_hline_ref_points(
                     canvas=pdf,
-                    x1_cen=point_radius, x2_cen=A3[0] - point_radius,
-                    y_cen=point_radius,  # problem with draw?
-                    radius=point_radius,
+                    x1_cen=RADIUS_REF_POINT, x2_cen=A3[0] - RADIUS_REF_POINT,
+                    y_cen=RADIUS_REF_POINT,  # problem with draw?
+                    radius=RADIUS_REF_POINT,
                 )
 
                 # draw two ref point in below in dxf file
                 draw_hline_ref_points_dxf(
                     modelspace=msp,
-                    x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
-                    y_cen=point_radius / mm,
-                    radius=point_radius / mm,
+                    x1_cen=RADIUS_REF_POINT / mm, x2_cen=(A3[0] - RADIUS_REF_POINT) / mm,
+                    y_cen=RADIUS_REF_POINT / mm,
+                    radius=RADIUS_REF_POINT / mm,
                 )
                 continue
             cnt_row += 1
@@ -147,14 +151,14 @@ def main(
     if cnt_row > 1:
         draw_hline_ref_points(
             canvas=pdf,
-            x1_cen=point_radius, x2_cen=A3[0] - point_radius,
-            y_cen=cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius,
-            radius=point_radius
+            x1_cen=RADIUS_REF_POINT, x2_cen=A3[0] - RADIUS_REF_POINT,
+            y_cen=cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - RADIUS_REF_POINT,
+            radius=RADIUS_REF_POINT
         )  # draw line ref point in upstairs
         draw_hline_ref_points_dxf(
-            modelspace=msp, x1_cen=point_radius / mm, x2_cen=(A3[0] - point_radius) / mm,
-            y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - point_radius) / mm,
-            radius=point_radius / mm
+            modelspace=msp, x1_cen=RADIUS_REF_POINT / mm, x2_cen=(A3[0] - RADIUS_REF_POINT) / mm,
+            y_cen=(cnt_row * stickers[ind_sticker - 1].height + (cnt_row - 1) * dy - RADIUS_REF_POINT) / mm,
+            radius=RADIUS_REF_POINT / mm
         )
 
     # add annotation upstairs
@@ -176,25 +180,18 @@ def main(
 
     # save as output.dxf
     if os.path.exists(f"{dir_to_save}/output.dxf"):
-
-        # print(f"{x+stickers[-1].width+x_pad=}, {y+stickers[-1].height+y_pad=}")
-        # print(f"{A3=}")
-
-        if not ((x + stickers[ind_sticker - 1].width + x_pad > A3[0])
-                and (y + 2 * stickers[ind_sticker - 1].height + y_pad > A3[1])):
+        if not ((x + stickers[ind_sticker - 1].width + dx + x_pad > A3[0])
+                and (y + 2 * stickers[ind_sticker - 1].height + dy + y_pad > A3[1])):
             # the output.dxf file already exists (it is assumed that it is completely filled)
             dxf.saveas(f"{dir_to_save}/output_last_page.dxf")
-
     else:
         dxf.saveas(f"{dir_to_save}/output.dxf")
 
 
-if __name__ == "__main__":
-    # set logger
-    logger = logging.getLogger(__name__)
-    logger.addHandler(logging.StreamHandler())
-    logger.setLevel(logging.DEBUG)
-
+def mcscap_create_pdf_dxf(
+        path_to_input_txt: str,
+        sign: Sign
+):
     # create dir with time processing for saving the result
     to_save = f"./output/{datetime.datetime.now().isoformat()[:-7].replace(':', '-')}"
     if not os.path.exists(to_save):
@@ -202,19 +199,29 @@ if __name__ == "__main__":
         logger.info(f"A directory has been created for saving files with stickers: {to_save}")
 
     # read data for stickers
-    text = read_txt("./input/sample.txt")
+    text = read_txt(path_to_input_txt)
+
     if len(text) == 0:
         logger.warning(f"Data file is empty.")
 
-    logger.info(f"The data file has been read. Total stickers: {len(text)}.")
+    # choose path to svg dependence sign "lot" or "sn"
+    if sign == "sn":
+        path_to_sticker = "template/svg/combo sn.svg"
+        path_to_reverse_sticker = "template/svg/combo sn.svg"
+    else:
+        path_to_sticker = "template/svg/sticker_lot.svg"
+        path_to_reverse_sticker = "template/svg/sticker_lot_reverse.svg"
+    # initialize dxf
+    path_to_dxf = "template/dxf/sticker.dxf"
+    path_to_reverse_dxf = "template/dxf/sticker_reverse.dxf"
 
     sticks = []
     cnt = 1
     for t in text:
         if cnt % 2 == 0:
             sticks.append(Sticker(
-                path_to_sticker="template/combo sn reverse.svg",
-                path_to_dxf="template/sticker_reverse.dxf",
+                path_to_sticker=path_to_reverse_sticker,
+                path_to_dxf=path_to_reverse_dxf,
                 width=46 * mm, height=28 * mm,
                 text=[
                     {"text": t[0], "x": 0, "y": 24 * mm, "align": "center"},
@@ -226,8 +233,8 @@ if __name__ == "__main__":
             )
         else:
             sticks.append(Sticker(
-                path_to_sticker="template/combo sn.svg",
-                path_to_dxf="template/sticker.dxf",
+                path_to_sticker=path_to_sticker,
+                path_to_dxf=path_to_dxf,
                 width=46 * mm, height=28 * mm,
                 text=[
                     {"text": t[0], "x": 0, "y": 24 * mm, "align": "center"},
@@ -240,12 +247,18 @@ if __name__ == "__main__":
 
     if len(sticks) > 0:
         logger.info("Start program...")
-        main(
+        create_pdf_dxf(
             stickers=sticks,
-            dx=-7 * mm,
-            dy=1 * mm,
-            point_radius=3.5 * mm,
+            dx=-7 * mm, dy=1 * mm,
+            x_pad=2 * RADIUS_REF_POINT + mm, y_pad=RADIUS_REF_POINT,
             dir_to_save=to_save,
         )
     else:
         logger.info("Empty file data. Stop program.")
+
+
+if __name__ == "__main__":
+    mcscap_create_pdf_dxf(
+        path_to_input_txt="input/sample.txt",
+        sign=Sign.lot
+    )
