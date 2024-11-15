@@ -49,8 +49,8 @@ class csvFile:
             lines = file.readlines()
             log = f"Выбранный файл .CSV {self.name_csv_file} \n" \
                   f"имеет {len(lines) - 1} строк. \n\n"
-            for l in lines:
 
+            for l in lines:
                 if TABLE_START_TEMPLATE in l:
                     # add begin of table in file DELETE
                     header.append(l)
@@ -79,6 +79,15 @@ class csvFile:
                 elif TEMPLATE_REPEAT_3 in line:
                     delete.append(line)
                 else:
+                    line = line.replace('"', '')
+
+                    # additional preprocessing for case:
+                    # "R97,""MCS_SM/R0603"",""-65.0000"",""72.5000"",""TopLayer"",""270"",""01,02/100 1%"""
+                    if line.count(",") > 6:
+                        lst_line = line.split(",")
+                        line = ",".join(lst_line[:6]) + ',"' + ",".join(lst_line[6:])
+                        line = line[:line.rfind('\n')] + '"\n'
+
                     data.append(line)
 
         # write cleaned data in buffer file
@@ -121,7 +130,6 @@ class csvFile:
 
         # name of create file
         name_csv_file = self.name_csv_file[self.name_csv_file.rfind("/") + 1:]
-
 
         if mode == MODE_SEPARATE:
             # the name of the new file with changes
@@ -179,8 +187,10 @@ class csvFile:
                                 else:
                                     row[col] = template[row[col]]
 
-                        if col == "Comment":
-                            row[col] = row[col].replace(" ", "_").replace("\n", "")
+                        if col == "Comment" or col is None:
+                            # row[col] = row[col].replace(" ", "_").replace("\n", "")
+                            row[col] = row[col].replace("\n", "")
+
                             if row[col] in template and template[row[col]] == "delete":
                                 # data_del.append(row.copy())
                                 flag_del = True
@@ -205,7 +215,6 @@ class csvFile:
                         data_bot.append(row.copy())
                     elif flag_top:
                         data_top.append(row.copy())
-
 
                 csv_writer_top = DictWriter(top_file, fieldnames=name_col.copy())
                 csv_writer_top.writeheader()
@@ -253,7 +262,8 @@ class csvFile:
                                     row[col] = template[row[col]]
 
                         if col == "Comment":
-                            row[col] = row[col].replace(" ", "_").replace("\n", "")
+                            # row[col] = row[col].replace(" ", "_").replace("\n", "")
+                            row[col] = row[col].replace("\n", "")
                             if row[col] in template and template[row[col]] == "delete":
                                 # data_del.append(row.copy())
                                 flag_del = True
@@ -279,7 +289,6 @@ class csvFile:
                 csv_writer_top_bot = DictWriter(top_bot_file, fieldnames=name_col.copy())
                 csv_writer_top_bot.writeheader()
                 csv_writer_top_bot.writerows(data_top_bot)
-
 
                 csv_writer_del = DictWriter(del_file, fieldnames=name_col.copy())
                 # csv_writer_del.writeheader()

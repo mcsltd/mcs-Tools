@@ -2,7 +2,7 @@ import configparser
 from datetime import datetime
 from tkinter import filedialog as fd
 from tkinter.messagebox import *
-from ParserSMD.editor import *
+from mcs_ParserSMD.editor import *
 from file_processing import *
 from tkinter import ttk
 
@@ -26,6 +26,7 @@ def set_config(path_to_config, path_to_template):
     # Save config into file
     with open(path_to_config, "w") as config_file:
         config.write(config_file)
+
 def get_config(path_to_config):
     """
     Retrieving data from a configuration file.
@@ -37,6 +38,7 @@ def get_config(path_to_config):
     # get config data
     file_name = config.get("Settings - CSV Handler App", "path")
     return file_name
+
 def load_preference():
     """
     load txt file from config.ini.
