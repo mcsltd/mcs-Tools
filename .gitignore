@@ -168,6 +168,5 @@ cython_debug/
 .idea
 
 # pass it files
-!mcs_StickerCreator/example/.
-!mcs_StickerCreator/template/.
-!requirements.txt
+!/mcs_StickerCreator/example/*
+!/mcs_StickerCreator/template/*
