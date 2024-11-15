@@ -169,7 +169,7 @@ cython_debug/
 
 # pass it files
 !/mcs_StickerCreator/example/*
-!/mcs_StickerCreator/example/2024-11-13T15-12-28
+!/mcs_StickerCreator/example/2024-11-13T15-12-28/*
 
-!/mcs_StickerCreator/template/dxf
-!/mcs_StickerCreator/template/pdf
+!/mcs_StickerCreator/template/dxf/*
+!/mcs_StickerCreator/template/svg/*
