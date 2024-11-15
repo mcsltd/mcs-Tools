@@ -173,3 +173,4 @@ cython_debug/
 
 !/mcs_StickerCreator/template/dxf/*
 !/mcs_StickerCreator/template/svg/*
+!/mcs_StickerCreator/input/sample.txt
