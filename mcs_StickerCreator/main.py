@@ -191,7 +191,7 @@ def create_pdf_dxf(
 def mcscap_create_pdf_dxf(
         path_to_input_txt: str,
         sign: Sign
-):
+) -> None:
     if not os.path.exists(path_to_input_txt):
         logger.error(f"No input file!")
         return

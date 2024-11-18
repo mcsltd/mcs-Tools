@@ -54,7 +54,13 @@ class Sticker:
 
     # function for draw in pdf
 
-    def draw_sticker_pdf(self, canvas: Canvas, x, y, font_name="Arial", font_size=7, ):
+    def draw_sticker_pdf(
+            self,
+            canvas: Canvas,
+            x: float, y: float,
+            font_name: str = "Arial",
+            font_size: int = 7) -> None:
+
         canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
         canvas.setFont(psfontname=font_name, size=font_size)
         # draw sticker
@@ -77,7 +83,7 @@ class Sticker:
                 for t in self.text:
                     self.draw_text_pdf(canvas=canvas, x=x + t["x"], y=y + t["y"], text=t["text"], align=t["align"])
 
-    def draw_text_pdf(self, canvas, x, y, text, align="center"):
+    def draw_text_pdf(self, canvas: Canvas, x: float, y: float, text: str, align: int = "center"):
         if align == "left":
             canvas.drawString(x, y, text)
 
@@ -101,7 +107,9 @@ class Annotation:
     def __init__(self):
         pass
 
-    def draw_annotation_pdf(self, canvas, x, y, text, font_name="Arial", font_size=9):
+    def draw_annotation_pdf(
+            self, canvas: Canvas,
+            x: float, y: float, text: str, font_name: float = "Arial", font_size: int = 9) -> None:
         str_width = reportlab.pdfbase.pdfmetrics.stringWidth(text, font_name, font_size)
         canvas.setFillColorCMYK(0.4, 0.4, 0.4, 1)
         canvas.setFont(psfontname=font_name, size=font_size)
