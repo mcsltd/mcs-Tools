@@ -261,6 +261,6 @@ def mcscap_create_pdf_dxf(
 
 if __name__ == "__main__":
     mcscap_create_pdf_dxf(
-        path_to_input_txt="input/task_18-11-2024/input.txt",
+        path_to_input_txt="input/task_18-11-2024/sample.txt",
         sign=Sign.sn
     )
