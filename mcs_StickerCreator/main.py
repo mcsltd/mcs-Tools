@@ -188,7 +188,7 @@ def create_pdf_dxf(
         dxf.saveas(f"{dir_to_save}/output.dxf")
 
 
-def mcscap_create_pdf_dxf(
+def db25var1_create_pdf_dxf(
         path_to_input_txt: str,
         sign: Sign
 ) -> None:
@@ -260,7 +260,7 @@ def mcscap_create_pdf_dxf(
 
 
 if __name__ == "__main__":
-    mcscap_create_pdf_dxf(
-        path_to_input_txt="input/task_18-11-2024/sample.txt",
+    db25var1_create_pdf_dxf(
+        path_to_input_txt="input/task_18-11-2024_1/sample.txt",
         sign=Sign.sn
     )
