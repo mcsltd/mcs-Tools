@@ -192,22 +192,24 @@ def mcscap_create_pdf_dxf(
         path_to_input_txt: str,
         sign: Sign
 ):
+    if not os.path.exists(path_to_input_txt):
+        logger.error(f"No input file!")
+        return
+
     # create dir with time processing for saving the result
     to_save = f"./output/{datetime.datetime.now().isoformat()[:-7].replace(':', '-')}"
     if not os.path.exists(to_save):
         os.makedirs(to_save)
         logger.info(f"A directory has been created for saving files with stickers: {to_save}")
 
-    # read data for stickers
     text = read_txt(path_to_input_txt)
-
     if len(text) == 0:
         logger.warning(f"Data file is empty.")
 
     # choose path to svg dependence sign "lot" or "sn"
     if sign == "sn":
         path_to_sticker = "template/svg/combo sn.svg"
-        path_to_reverse_sticker = "template/svg/combo sn.svg"
+        path_to_reverse_sticker = "template/svg/combo sn reverse.svg"
     else:
         path_to_sticker = "template/svg/sticker_lot.svg"
         path_to_reverse_sticker = "template/svg/sticker_lot_reverse.svg"
@@ -259,6 +261,6 @@ def mcscap_create_pdf_dxf(
 
 if __name__ == "__main__":
     mcscap_create_pdf_dxf(
-        path_to_input_txt="input/sample.txt",
-        sign=Sign.lot
+        path_to_input_txt="input/task_18-11-2024/input.txt",
+        sign=Sign.sn
     )
