@@ -23,7 +23,7 @@ def create_pdf_dxf(
         dir_to_save: str,
         x_pad: float, y_pad: float,
         dx_inner: float = 0.49, dy_inner: float = 0.52,
-        annotation: str = "TASK_0001"
+        annotation: str = "TASK_0001",
 ) -> None:
     logger.info(f"The data file has been read. Total stickers: {len(stickers)}.")
 

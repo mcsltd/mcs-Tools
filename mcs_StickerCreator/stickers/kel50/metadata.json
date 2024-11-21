@@ -1,0 +1,16 @@
+{
+  "stickers":
+  [
+    {
+      "sn": "./kel50_sn.svg",
+      "mm_width": 53, "mm_height": 51,
+      "labels": [
+        {"mm_x": 0, "mm_y": 47, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 19, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 16, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 12, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 26, "mm_y": 7, "align": "left", "size": 9, "font": "Arial"}
+      ]
+    }
+  ]
+}

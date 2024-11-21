@@ -1,11 +1,11 @@
 import datetime
 import json
 import os
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from reportlab.lib.units import mm
 from mcs_StickerCreator.constants import RADIUS_REF_POINT
-from mcs_StickerCreator.stickers.db25.create_pdf_dxf import create_pdf_dxf
+from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
 from mcs_StickerCreator.stickers.db25.sticker import Sticker
 
 PATH_TO_METADATA = "metadata.json"
