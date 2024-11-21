@@ -1,0 +1,31 @@
+{
+  "stickers":
+  [
+    {
+      "sn": "./sticker_sn.svg",
+      "lot": "./sticker_lot.svg",
+      "dxf": "./sticker.dxf",
+      "mm_width": 46, "mm_height": 28,
+      "labels": [
+        {"mm_x": 0, "mm_y": 24, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 21, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 18, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}
+      ],
+      "inverted": false
+    },
+    {
+      "sn": "./sticker_sn_reverse.svg",
+      "lot": "./sticker_lot_reverse.svg",
+      "dxf": "./sticker_reverse.dxf",
+      "mm_width": 46, "mm_height": 28,
+      "labels": [
+        {"mm_x": 0, "mm_y": 24, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 21, "align": "center", "size": 9, "font": "Arial"},
+      {"mm_x": 0, "mm_y": 18, "align": "center", "size": 9, "font": "Arial"},
+      {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}
+      ],
+      "inverted": true
+    }
+  ]
+}
