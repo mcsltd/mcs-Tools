@@ -175,6 +175,6 @@ cython_debug/
 !/mcs_StickerCreator/template/svg/*
 !/mcs_StickerCreator/input/sample.txt
 !/mcs_StickerCreator/_svglib/*
-!/mcs_StickerCreator/stickers/db25/*
+!/mcs_StickerCreator/stickers/*
 
 !/mcs_ParserSMD/template.txt
