@@ -6,9 +6,12 @@ from copy import deepcopy
 import ezdxf
 import numpy as np
 from ezdxf import select
+from reportlab.graphics import renderPDF
 from reportlab.lib.units import mm
+from reportlab.pdfgen.canvas import Canvas
 
 from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
+from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
 
 PATH_TO_METADATA = "metadata.json"
 
@@ -67,6 +70,48 @@ class Sticker:
                 if self.min_pt is None or np.all(pt < self.min_pt):
                     self.min_pt = pt  # anchor point
 
+        # function for draw in pdf
+    def draw_sticker_pdf(
+            self,
+            canvas: Canvas,
+            x: float, y: float,
+            font_name: str = "Arial",
+            font_size: int = 7
+    ) -> None:
+
+        canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
+        canvas.setFont(psfontname=font_name, size=font_size)
+        # draw sticker
+        renderPDF.draw(self.image, canvas, x, y)
+        # draw text on sticker
+        if self.labels is not None:
+            if self.inverted:
+                canvas.saveState()
+
+                canvas.translate(x + self.mm_width - 0.5 * mm, y + self.mm_height + 0.25 * mm)
+                canvas.rotate(180)
+
+                # draw text
+                for t in self.labels:
+                    self.draw_text_pdf(canvas=canvas, x=t["mm_x"], y=t["mm_y"], text=t["text"], align=t["align"])
+
+                canvas.restoreState()
+            else:
+                # draw text
+                for t in self.labels:
+                    self.draw_text_pdf(canvas=canvas, x=x + t["mm_x"], y=y + t["mm_y"], text=t["text"],
+                                       align=t["align"])
+
+    def draw_text_pdf(self, canvas: Canvas, x: float, y: float, text: str, align: int = "center"):
+        if align == "left":
+            canvas.drawString(x, y, text)
+
+        if align == "center":
+            text_width = canvas.stringWidth(text)
+            canvas.drawString(x + int((self.mm_width - text_width)) / 2, y, text)
+
+        if align == "right":
+            canvas.drawRightString(x, y, text)
 
 def kel50_create_pdf(input_file, sign="sn"):
     with open(PATH_TO_METADATA, "r") as file:
@@ -116,13 +161,13 @@ def kel50_create_pdf(input_file, sign="sn"):
     if not os.path.exists(to_save):
         os.makedirs(to_save)
 
-    # if len(stickers) > 0:
-    #     create_pdf_dxf(
-    #         stickers=stickers,
-    #         dx=-7 * mm, dy=1 * mm,
-    #         x_pad=2 * RADIUS_REF_POINT + mm, y_pad=RADIUS_REF_POINT,
-    #         dir_to_save=to_save,
-    #     )
+    if len(stickers) > 0:
+        create_pdf_dxf(
+            stickers=stickers,
+            dx=10 * mm, dy=10 * mm,
+            x_pad=27 * mm, y_pad=16 * mm,
+            dir_to_save=to_save, annotation=None
+        )
 
 
 if __name__ == "__main__":
