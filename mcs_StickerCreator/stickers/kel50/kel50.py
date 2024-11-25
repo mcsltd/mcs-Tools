@@ -8,6 +8,8 @@ import numpy as np
 from ezdxf import select
 from reportlab.graphics import renderPDF
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
 from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
@@ -15,6 +17,9 @@ from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
 
 PATH_TO_METADATA = "metadata.json"
 
+
+pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
 class Sticker:
 
@@ -70,17 +75,13 @@ class Sticker:
                 if self.min_pt is None or np.all(pt < self.min_pt):
                     self.min_pt = pt  # anchor point
 
-        # function for draw in pdf
+    # function for draw in pdf
     def draw_sticker_pdf(
             self,
             canvas: Canvas,
             x: float, y: float,
-            font_name: str = "Arial",
-            font_size: int = 7
     ) -> None:
 
-        canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
-        canvas.setFont(psfontname=font_name, size=font_size)
         # draw sticker
         renderPDF.draw(self.image, canvas, x, y)
         # draw text on sticker
@@ -93,25 +94,44 @@ class Sticker:
 
                 # draw text
                 for t in self.labels:
-                    self.draw_text_pdf(canvas=canvas, x=t["mm_x"], y=t["mm_y"], text=t["text"], align=t["align"])
+                    self.draw_text_pdf(
+                        canvas=canvas,
+                        x=x + t["mm_x"], y=y + t["mm_y"],
+                        text=t["text"], font_name=t["font"], size=t["size"],
+                        align=t["align"])
 
                 canvas.restoreState()
             else:
                 # draw text
                 for t in self.labels:
-                    self.draw_text_pdf(canvas=canvas, x=x + t["mm_x"], y=y + t["mm_y"], text=t["text"],
-                                       align=t["align"])
+                    self.draw_text_pdf(
+                        canvas=canvas,
+                        x=x + t["mm_x"], y=y + t["mm_y"],
+                        text=t["text"], font_name=t["font"], size=t["size"],
+                        align=t["align"])
 
-    def draw_text_pdf(self, canvas: Canvas, x: float, y: float, text: str, align: int = "center"):
+    def draw_text_pdf(
+            self, canvas: Canvas,
+            x: float, y: float,
+            text: str,
+            font_name: str = "Arial", size: int = 7,
+            align: int = "center"):
+
+        canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
+        # canvas.setFillColorCMYK(0.4, 0.4, 0.4, 1)
+
+        canvas.setFont(psfontname=font_name, size=size)
+
         if align == "left":
             canvas.drawString(x, y, text)
 
         if align == "center":
-            text_width = canvas.stringWidth(text)
+            text_width = canvas.stringWidth(text=text, fontName=font_name, fontSize=size)
             canvas.drawString(x + int((self.mm_width - text_width)) / 2, y, text)
 
         if align == "right":
             canvas.drawRightString(x, y, text)
+
 
 def kel50_create_pdf(input_file, sign="sn"):
     with open(PATH_TO_METADATA, "r") as file:
