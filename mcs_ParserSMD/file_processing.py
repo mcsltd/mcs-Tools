@@ -318,7 +318,7 @@ class csvFile:
                     if ln != "\n":
                         for el in symbols:
                             ln = ln.replace(el, "")
-                        ln = ln.split()
+                        ln = ln.rsplit(' ', 1)      # 'no fit' delete -> {"no fit": "delete"}
                         t.update({ln[0]: ln[1]})
         except Exception:
             log += f"Отсуствует файл:\n {name_template}.\n\n"

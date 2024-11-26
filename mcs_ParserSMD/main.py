@@ -1,15 +1,29 @@
 import configparser
+import sys
 from datetime import datetime
 from tkinter import filedialog as fd
 from tkinter.messagebox import *
-from mcs_ParserSMD.editor import *
+from editor import *
 from file_processing import *
 from tkinter import ttk
 
 import os
 
+# def resource_path(relative_path):
+#     """ Get absolute path to resource, works for dev and for PyInstaller """
+#     try:
+#         # PyInstaller creates a temp folder and stores path in _MEIPASS
+#         base_path = sys._MEIPASS
+#     except Exception:
+#         base_path = os.path.abspath(".")
+#
+#     return os.path.join(base_path, relative_path)
+
+
 PATH_TO_DIR_CONFIG = os.environ["HOMEDRIVE"] + os.environ["HOMEPATH"] + f"\\.mcs-tools"
 PATH_TO_CONFIG = os.environ["HOMEDRIVE"] + os.environ["HOMEPATH"] + f"\\.mcs-tools\\config.ini"
+
+
 
 
 def set_config(path_to_config, path_to_template):
@@ -362,7 +376,7 @@ class App:
 
 if __name__ == "__main__":
     # path_to_template = load_preference()
-    path_to_template = os.getcwd() + rf"\template.txt"
+    path_to_template = os.getcwd() + rf"\template.txt"  # для работы этой программе необходим файл template.txt !!!
 
     if os.path.exists(path_to_template):
 
