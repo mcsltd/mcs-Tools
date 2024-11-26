@@ -13,7 +13,8 @@ from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
-class Sticker:
+
+class StickerDB25:
 
     def __init__(
             self,

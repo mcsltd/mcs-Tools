@@ -6,19 +6,19 @@ from copy import deepcopy
 from reportlab.lib.units import mm
 from mcs_StickerCreator.constants import RADIUS_REF_POINT
 from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
-from mcs_StickerCreator.stickers.db25.sticker import Sticker
+from mcs_StickerCreator.stickers.db25.sticker import StickerDB25
 
-PATH_TO_METADATA = "metadata.json"
+PATH_TO_METADATA_DB25 = r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\db25\metadata.json"
 
 
 def db25var1_create_pdf_dxf(input_file, sign):
-    with open(PATH_TO_METADATA, "r") as file:
+    with open(PATH_TO_METADATA_DB25, "r") as file:
         metadata = json.load(file)
 
     # создание шаблона
     template_stickers = []
     for stc in metadata["stickers"]:
-        s = Sticker()
+        s = StickerDB25()
         for attr in stc.keys():
             if attr == "sn" and sign == "sn":
                 setattr(s, "path_to_svg", stc[attr])
@@ -55,7 +55,7 @@ def db25var1_create_pdf_dxf(input_file, sign):
                 ind_s += 1
 
     # create dir with time processing for saving the result
-    to_save = f"./output/{datetime.datetime.now().isoformat()[:-7].replace(':', '-')}"
+    to_save = f"./output/db25_{datetime.datetime.now().isoformat()[:-7].replace('-', ' ').replace(':', '-')}"
     if not os.path.exists(to_save):
         os.makedirs(to_save)
 
@@ -64,15 +64,13 @@ def db25var1_create_pdf_dxf(input_file, sign):
             stickers=stickers,
             dx=-7 * mm, dy=1 * mm,
             x_pad=2 * RADIUS_REF_POINT + mm, y_pad=RADIUS_REF_POINT,
-            dir_to_save=to_save,
+            dir_to_save=to_save, skip_dxf=False, skip_rpoints=False
         )
-
-
 
 
 if __name__ == "__main__":
     db25var1_create_pdf_dxf(
-        r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\input\task_15-11-2024\input5.txt",
+        r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\db25\sample.txt",
         sign="sn"
     )
 

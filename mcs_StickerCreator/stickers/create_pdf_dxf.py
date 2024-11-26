@@ -5,7 +5,7 @@ import ezdxf
 
 
 from mcs_StickerCreator.constants import mm, A3, RADIUS_REF_POINT, Sign
-from mcs_StickerCreator.stickers.db25.sticker import Sticker, Annotation
+from mcs_StickerCreator.stickers.db25.sticker import StickerDB25, Annotation
 from mcs_StickerCreator.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
 
 
@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 
 def create_pdf_dxf(
-        stickers: list[Sticker],
+        stickers: list,
         dx: float, dy: float,
         dir_to_save: str,
         x_pad: float, y_pad: float,

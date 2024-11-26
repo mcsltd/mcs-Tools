@@ -15,13 +15,14 @@ from reportlab.pdfgen.canvas import Canvas
 from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
 from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
 
-PATH_TO_METADATA = "metadata.json"
+PATH_TO_METADATA_KEL50 = r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\kel50\metadata.json"
 
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
-class Sticker:
+
+class StickerKel50:
 
     def __init__(
             self,
@@ -134,13 +135,13 @@ class Sticker:
 
 
 def kel50_create_pdf(input_file, sign="sn"):
-    with open(PATH_TO_METADATA, "r") as file:
+    with open(PATH_TO_METADATA_KEL50, "r") as file:
         metadata = json.load(file)
 
     # создание шаблона
     template_stickers = []
     for stc in metadata["stickers"]:
-        s = Sticker()
+        s = StickerKel50()
         for attr in stc.keys():
             if attr == "sn" and sign == "sn":
                 setattr(s, "path_to_svg", stc[attr])
@@ -177,7 +178,7 @@ def kel50_create_pdf(input_file, sign="sn"):
                 ind_s += 1
 
     # create dir with time processing for saving the result
-    to_save = f"./output/{datetime.datetime.now().isoformat()[:-7].replace(':', '-')}"
+    to_save = f"./output/kel50_{datetime.datetime.now().isoformat()[:-7].replace('-', ' ').replace(':', '-')}"
     if not os.path.exists(to_save):
         os.makedirs(to_save)
 

@@ -2,14 +2,14 @@
   "stickers":
   [
     {
-      "sn": "./kel50_sn.svg",
-      "mm_width": 53, "mm_height": 56,
+      "sn": "./stickers/kel50/kel50_sn.svg",
+      "mm_width": 52.8, "mm_height": 56.052,
       "labels": [
-        {"mm_x": 17, "mm_y": 48, "align": "left", "size": 9, "font": "Arial-Bold"},
-        {"mm_x": 5, "mm_y": 17, "align": "center", "size": 9, "font": "Arial"},
-        {"mm_x": 5, "mm_y": 13, "align": "center", "size": 9, "font": "Arial"},
-        {"mm_x": 5, "mm_y": 10, "align": "center", "size": 9, "font": "Arial"},
-        {"mm_x": 31, "mm_y": 1.5, "align": "left", "size": 7, "font": "Arial"}
+        {"mm_x": 0, "mm_y": 48, "align": "center", "size": 9, "font": "Arial-Bold"},
+        {"mm_x": 0, "mm_y": 19, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 16, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 0, "mm_y": 13, "align": "center", "size": 9, "font": "Arial"},
+        {"mm_x": 27, "mm_y": 8.5, "align": "left", "size": 7, "font": "Arial"}
       ]
     }
   ]
