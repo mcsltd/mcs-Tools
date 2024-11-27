@@ -55,7 +55,7 @@ class Maker:
 
     # function for sticker generation
     def maker_db25(self):
-        if not hasattr(self, "sticker_fr"):
+        if hasattr(self, "sticker_fr"):
             self.sticker_fr.destroy()
 
             self.sticker_fr = ttk.Frame(self.master, relief=SOLID, padding=[8, 10])
@@ -69,7 +69,7 @@ class Maker:
 
     def setUiFrameDb25(self):
         self.in_btn = ttk.Button(self.sticker_fr, text="Выбрать файл для обработки", command=self.get_input,
-                            width=30, padding=6)
+                                 width=30, padding=6)
         self.in_btn.grid(row=0, column=0)
 
         ind_row = 0
@@ -90,7 +90,8 @@ class Maker:
                 ("TXT Files", ".txt"),
             )
         )
-        self.ok_btn["state"] = NORMAL
+        if self.input_file is not None and self.input_file != "":
+            self.ok_btn["state"] = NORMAL
 
     def make_db25var1_create_pdf_dxf(self):
         try:

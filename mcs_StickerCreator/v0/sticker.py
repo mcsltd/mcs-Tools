@@ -8,7 +8,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
-from _svglib.svglib.svglib import svg2rlg
+from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
 
 import ezdxf
 

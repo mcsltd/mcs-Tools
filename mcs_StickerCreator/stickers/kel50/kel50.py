@@ -167,6 +167,11 @@ def kel50_create_pdf(input_file, sign="sn"):
                 continue
 
             data = data.replace("\n", "").split(";")
+
+            # the data must match the labels in the metadata
+            if len(data) != len(template_stickers[ind_s].labels):
+                raise Exception("The data does not match the settings.")
+
             s = deepcopy(template_stickers[ind_s])
             s.initialize()
             s.set_label(data)
