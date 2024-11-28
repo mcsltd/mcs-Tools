@@ -171,8 +171,8 @@ cython_debug/
 !/mcs_StickerCreator/example/*
 !/mcs_StickerCreator/example/2024-11-13T15-12-28/*
 
-!/mcs_StickerCreator/template/dxf/*
-!/mcs_StickerCreator/template/svg/*
+!/mcs_StickerCreator/v0/template/dxf/*
+!/mcs_StickerCreator/v0/template/svg/*
 !/mcs_StickerCreator/input/sample.txt
 !/mcs_StickerCreator/_svglib/*
 !/mcs_StickerCreator/stickers/kel50/*
