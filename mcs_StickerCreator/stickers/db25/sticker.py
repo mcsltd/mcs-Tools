@@ -9,7 +9,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
+from _svglib.svglib.svglib import svg2rlg
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 

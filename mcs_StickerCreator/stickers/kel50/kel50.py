@@ -12,10 +12,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
-from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
+from _svglib.svglib.svglib import svg2rlg
+from stickers.create_pdf_dxf import create_pdf_dxf
 
-PATH_TO_METADATA_KEL50 = r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\kel50\metadata.json"
+PATH_TO_METADATA_KEL50 = r".\stickers\kel50\metadata.json"
 
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
@@ -183,7 +183,9 @@ def kel50_create_pdf(input_file, sign="sn"):
                 ind_s += 1
 
     # create dir with time processing for saving the result
-    to_save = f"./output/kel50_{datetime.datetime.now().isoformat()[:-7].replace('-', ' ').replace(':', '-')}"
+    name = datetime.datetime.now().isoformat()[:-7].replace('-', ' ').replace(':', '-')
+    idx_sep = name.find("T")
+    to_save = f"./output/{name[:idx_sep]} - KEL50 {name[idx_sep:]}"
     if not os.path.exists(to_save):
         os.makedirs(to_save)
 

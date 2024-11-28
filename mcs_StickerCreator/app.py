@@ -4,8 +4,8 @@ from tkinter.messagebox import *
 from tkinter import ttk
 
 import constants
-from mcs_StickerCreator.stickers.db25.db25 import db25var1_create_pdf_dxf
-from mcs_StickerCreator.stickers.kel50.kel50 import kel50_create_pdf
+from stickers.db25.db25 import db25var1_create_pdf_dxf
+from stickers.kel50.kel50 import kel50_create_pdf
 
 
 class Maker:
