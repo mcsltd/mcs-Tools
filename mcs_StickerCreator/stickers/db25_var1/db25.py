@@ -8,11 +8,12 @@ from constants import RADIUS_REF_POINT
 from stickers.create_pdf_dxf import create_pdf_dxf
 from stickers.db25.sticker import StickerDB25
 
-PATH_TO_METADATA_DB25 = r".\stickers\db25\metadata.json"
+PATH_TO_METADATA_DB25_VAR1 = r".\stickers\db25_var1\metadata.json"
+
 
 
 def db25var1_create_pdf_dxf(input_file, sign):
-    with open(PATH_TO_METADATA_DB25, "r") as file:
+    with open(PATH_TO_METADATA_DB25_VAR1, "r") as file:
         metadata = json.load(file)
 
     # создание шаблона
@@ -77,7 +78,7 @@ def db25var1_create_pdf_dxf(input_file, sign):
 
 if __name__ == "__main__":
     db25var1_create_pdf_dxf(
-        r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\db25\sample.txt",
-        sign="sn"
+        r"/mcs_StickerCreator/stickers/db25_var1\sample.txt",
+        sign="sn",
     )
 

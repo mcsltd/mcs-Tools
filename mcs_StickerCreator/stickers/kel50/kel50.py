@@ -12,8 +12,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-from _svglib.svglib.svglib import svg2rlg
-from stickers.create_pdf_dxf import create_pdf_dxf
+from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
+from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
 
 PATH_TO_METADATA_KEL50 = r".\stickers\kel50\metadata.json"
 
