@@ -83,6 +83,7 @@ def db25var2_create_pdf_dxf(input_file, sign):
 
     if len(stickers) > 0:
         create_pdf_dxf(
+            dx_inner=0.47,
             stickers=stickers,
             dx=-3 * mm, dy=1 * mm,
             x_pad=2 * RADIUS_REF_POINT + mm, y_pad=RADIUS_REF_POINT,
