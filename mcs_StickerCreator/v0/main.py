@@ -209,14 +209,14 @@ def db25var1_create_pdf_dxf(
 
     # choose path to svg dependence sign "lot" or "sn"
     if sign == "sn":
-        path_to_sticker = "../template/svg/combo sn.svg"
-        path_to_reverse_sticker = "../template/svg/combo sn reverse.svg"
+        path_to_sticker = "template/svg/combo sn.svg"
+        path_to_reverse_sticker = "template/svg/combo sn reverse.svg"
     else:
-        path_to_sticker = "../template/svg/sticker_lot.svg"
-        path_to_reverse_sticker = "../template/svg/sticker_lot_reverse.svg"
+        path_to_sticker = "template/svg/sticker_lot.svg"
+        path_to_reverse_sticker = "template/svg/sticker_lot_reverse.svg"
     # initialize dxf
-    path_to_dxf = "../template/dxf/sticker.dxf"
-    path_to_reverse_dxf = "../template/dxf/sticker_reverse.dxf"
+    path_to_dxf = "template/dxf/sticker.dxf"
+    path_to_reverse_dxf = "template/dxf/sticker_reverse.dxf"
 
     sticks = []
     cnt = 1

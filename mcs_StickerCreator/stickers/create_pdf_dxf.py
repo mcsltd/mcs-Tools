@@ -8,7 +8,6 @@ from mcs_StickerCreator.constants import mm, A3, RADIUS_REF_POINT, Sign
 from mcs_StickerCreator.stickers.db25_var1.sticker import Annotation
 from mcs_StickerCreator.draw import draw_hline_ref_points, draw_hline_ref_points_dxf
 
-
 from reportlab.pdfgen.canvas import Canvas
 
 # custom logger

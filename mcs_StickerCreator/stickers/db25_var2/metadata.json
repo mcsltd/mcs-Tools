@@ -3,9 +3,9 @@
   "stickers":
   [
     {
-      "sn": "./db25_var2_sn.svg",
-      "lot": "./db25_var2_lot.svg",
-      "dxf": "./db25_var2.dxf",
+      "sn": "./stickers/db25_var2/db25_var2_sn.svg",
+      "lot": "./stickers/db25_var2/db25_var2_lot.svg",
+      "dxf": "./stickers/db25_var2/db25_var2.dxf",
       "mm_width": 46, "mm_height": 22,
       "labels": [
         {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
@@ -16,9 +16,9 @@
       "inverted": false
     },
     {
-      "sn": "./db25_var2_sn_reverse.svg",
-      "lot": "./db25_var2_lot_reverse.svg",
-      "dxf": "./db25_var2_reverse.dxf",
+      "sn": "./stickers/db25_var2/db25_var2_sn_reverse.svg",
+      "lot": "./stickers/db25_var2/db25_var2_lot_reverse.svg",
+      "dxf": "./stickers/db25_var2/db25_var2_reverse.dxf",
       "mm_width": 46, "mm_height": 22,
       "labels": [
         {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},

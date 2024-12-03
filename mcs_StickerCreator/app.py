@@ -1,17 +1,22 @@
+import os.path
+import sys
+from functools import partial
 from tkinter import filedialog as fd, Tk, Listbox, Variable
 from tkinter.constants import SINGLE, SOLID, DISABLED, NORMAL
 from tkinter.messagebox import *
 from tkinter import ttk
 
 import constants
-from stickers.db25.db25 import db25var1_create_pdf_dxf
+from stickers.db25_var1.db25 import db25var1_create_pdf_dxf
+from stickers.db25_var2.db25_var2 import db25var2_create_pdf_dxf
 from stickers.kel50.kel50 import kel50_create_pdf
 
 
 class Maker:
     NAME_STICKERS = [
         "DB25 var.1",
-        "KEL 50"
+        "KEL 50",
+        "DB25 var.2"
     ]
 
     def __init__(self, master):
@@ -21,6 +26,14 @@ class Maker:
         self.list_sign = [constants.Sign.sn, constants.Sign.lot]
         self.selected_sign = Variable(value=self.list_sign)
         self.selected_sign.set(constants.Sign.sn)
+
+        if not os.path.exists("./stickers"):
+            showwarning(
+                title="Возникла ошибка!",
+                message="В результате работы программы возникла ошибка!\n"
+                        "Проверьте что в папке с программой есть папка stickers с дополнительными файлами."
+            )
+            sys.exit()
 
         self.setUi()
 
@@ -39,7 +52,7 @@ class Maker:
             column=1, columnspan=3,
             padx=10, pady=10
         )
-        self.setUiFrameDb25()
+        self.setUiFrameDb25(sticker_name=Maker.NAME_STICKERS[0])
 
     def select_sticker(self, event):
         ind_v, = self.lb_sticker.curselection()
@@ -48,13 +61,13 @@ class Maker:
             return
 
         v = Maker.NAME_STICKERS[ind_v]
-        if v == Maker.NAME_STICKERS[0]:
-            self.maker_db25()
+        if v == Maker.NAME_STICKERS[0] or v == Maker.NAME_STICKERS[2]:     # var 1 or var 2
+            self.maker_db25(v)
         if v == Maker.NAME_STICKERS[1]:
             self.maker_kel50()
 
     # function for sticker generation
-    def maker_db25(self):
+    def maker_db25(self, sticker_name):
         if hasattr(self, "sticker_fr"):
             self.sticker_fr.destroy()
 
@@ -65,11 +78,13 @@ class Maker:
                 padx=10, pady=10
             )
 
-        self.setUiFrameDb25()
+        self.setUiFrameDb25(sticker_name)
 
-    def setUiFrameDb25(self):
-        self.in_btn = ttk.Button(self.sticker_fr, text="Выбрать файл для обработки", command=self.get_input,
-                                 width=30, padding=6)
+    def setUiFrameDb25(self, sticker_name):
+        self.in_btn = ttk.Button(
+            self.sticker_fr, text="Выбрать файл для обработки", command=self.get_input,
+            width=30, padding=6
+        )
         self.in_btn.grid(row=0, column=0)
 
         ind_row = 0
@@ -79,8 +94,10 @@ class Maker:
             ind_row += 1
 
         self.ok_btn = ttk.Button(
-            self.sticker_fr, text="Сгенерировать", command=self.make_db25var1_create_pdf_dxf,
+            self.sticker_fr, text="Сгенерировать",
+            command=partial(self.make_db25_create_pdf_dxf, sticker_name),
             width=30, padding=6, state=DISABLED)
+
         self.ok_btn.grid(row=len(self.list_sign) + 1, column=0)
 
     def get_input(self):
@@ -93,9 +110,14 @@ class Maker:
         if self.input_file is not None and self.input_file != "":
             self.ok_btn["state"] = NORMAL
 
-    def make_db25var1_create_pdf_dxf(self):
+    def make_db25_create_pdf_dxf(self, name):
+
         try:
-            db25var1_create_pdf_dxf(self.input_file, self.selected_sign.get())
+
+            if name == Maker.NAME_STICKERS[0]:
+                db25var1_create_pdf_dxf(self.input_file, self.selected_sign.get())
+            elif name == Maker.NAME_STICKERS[2]:
+                db25var2_create_pdf_dxf(self.input_file, self.selected_sign.get())
         except:
             showwarning(
                 title="Возникла ошибка!",

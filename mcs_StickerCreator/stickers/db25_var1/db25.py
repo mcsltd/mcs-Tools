@@ -4,9 +4,9 @@ import os
 from copy import deepcopy
 
 from reportlab.lib.units import mm
-from constants import RADIUS_REF_POINT
-from stickers.create_pdf_dxf import create_pdf_dxf
-from stickers.db25.sticker import StickerDB25
+from mcs_StickerCreator.constants import RADIUS_REF_POINT
+from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
+from mcs_StickerCreator.stickers.db25_var1.sticker import StickerDB25
 
 PATH_TO_METADATA_DB25_VAR1 = r".\stickers\db25_var1\metadata.json"
 
@@ -63,7 +63,7 @@ def db25var1_create_pdf_dxf(input_file, sign):
     # create dir with time processing for saving the result
     name = datetime.datetime.now().isoformat()[:-7].replace('-', ' ').replace(':', '-')
     idx_sep = name.find("T")
-    to_save = f"./output/{name[:idx_sep]} - DB25 {name[idx_sep:]}"
+    to_save = f"./output/{name[:idx_sep]} - {metadata['name']} {name[idx_sep:]}"
     if not os.path.exists(to_save):
         os.makedirs(to_save)
 

@@ -2,28 +2,20 @@ import json
 import os
 import datetime
 
-import ezdxf
-import numpy as np
-import reportlab
 
-from ezdxf import select
-from ezdxf.layouts import Modelspace
-from reportlab.graphics import renderPDF
 from reportlab.lib.units import mm
-from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from copy import deepcopy
 
-from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
-from mcs_StickerCreator.constants import RADIUS_REF_POINT
-from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
-from mcs_StickerCreator.stickers.db25_var1.sticker import StickerDB25
+from constants import RADIUS_REF_POINT
+from stickers.create_pdf_dxf import create_pdf_dxf
+from stickers.db25_var1.sticker import StickerDB25
 
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
-PATH_TO_METADATA_DB25_VAR2 = r"C:\Users\andmo\OneDrive\Desktop\my-dev-work\mcs-Tools\mcs_StickerCreator\stickers\db25_var2\metadata.json"
+PATH_TO_METADATA_DB25_VAR2 = r".\stickers\db25_var2\metadata.json"
 
 
 def db25var2_create_pdf_dxf(input_file, sign):
@@ -83,7 +75,7 @@ def db25var2_create_pdf_dxf(input_file, sign):
 
     if len(stickers) > 0:
         create_pdf_dxf(
-            dx_inner=0.47,
+            dx_inner=0.4,
             stickers=stickers,
             dx=-3 * mm, dy=1 * mm,
             x_pad=2 * RADIUS_REF_POINT + mm, y_pad=RADIUS_REF_POINT,
