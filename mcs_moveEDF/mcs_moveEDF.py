@@ -45,9 +45,9 @@ def move_files(files: list, save_dir: str):
 
 
 if __name__ == "__main__":
-    inp = "./input"
-    txt = "list.txt"
-    out = "./output"
+    # inp = "./input"
+    # txt = "list.txt"
+    # out = "./output"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type=str,
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     edf_files: list = read_txt(path_to_txt=args.txt)
 
     moved_files = set(dir_edf_files) - set(edf_files)
-    moved_files = [f"{inp}/{f}" for f in moved_files]
+    moved_files = [f"{args.input}/{f}" for f in moved_files]
     print(f"Всего будет перемещено EDF файлов {len(moved_files)} в папку с названием {args.output}")
 
     # move edf files which not in list
