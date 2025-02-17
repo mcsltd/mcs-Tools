@@ -15,6 +15,7 @@ from mcs_StickerCreator._svglib.svglib.svglib import svg2rlg
 pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
+
 class StickerDB25:
 
     def __init__(
@@ -41,6 +42,7 @@ class StickerDB25:
         self.inverted = inverted
 
     def set_label(self, data: list[str]):
+        self.labels = self.labels[str(len(data))]
         for label, text in zip(self.labels, data):
             if text != "":
                 label["text"] = text
@@ -74,12 +76,13 @@ class StickerDB25:
             self,
             canvas: Canvas,
             x: float, y: float,
-            font_name: str = "Arial",
-            font_size: int = 7
+            # font_name: str = "Arial",
+            # font_size: int = 7
     ) -> None:
 
         canvas.setFillColorCMYK(0.03, 0.02, 0.03, 0)
-        canvas.setFont(psfontname=font_name, size=font_size)
+        # canvas.setFont(psfontname=font_name, size=font_size)
+
         # draw sticker
         renderPDF.draw(self.image, canvas, x, y)
         # draw text on sticker
@@ -92,15 +95,36 @@ class StickerDB25:
 
                 # draw text
                 for t in self.labels:
-                    self.draw_text_pdf(canvas=canvas, x=t["mm_x"], y=t["mm_y"], text=t["text"], align=t["align"])
+                    self.draw_text_pdf(
+                        canvas=canvas,
+                        x=t["mm_x"], y=t["mm_y"],
+                        text=t["text"],
+                        align=t["align"],
+                        font_size=t["size"]
+                    )
 
                 canvas.restoreState()
             else:
                 # draw text
                 for t in self.labels:
-                    self.draw_text_pdf(canvas=canvas, x=x + t["mm_x"], y=y + t["mm_y"], text=t["text"], align=t["align"])
+                    self.draw_text_pdf(
+                        canvas=canvas,
+                        x=x + t["mm_x"], y=y + t["mm_y"],
+                        text=t["text"],
+                        align=t["align"],
+                        font_size=t["size"]
+                    )
 
-    def draw_text_pdf(self, canvas: Canvas, x: float, y: float, text: str, align: int = "center"):
+    def draw_text_pdf(
+            self, canvas: Canvas,
+            x: float, y: float,
+            text: str,
+            font_size: int,
+            align: int = "center",
+            font_name="Arial",
+    ):
+        canvas.setFont(psfontname=font_name, size=font_size)
+
         if align == "left":
             canvas.drawString(x, y, text)
 

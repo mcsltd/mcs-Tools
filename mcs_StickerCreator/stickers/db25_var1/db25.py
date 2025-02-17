@@ -11,7 +11,6 @@ from mcs_StickerCreator.stickers.db25_var1.sticker import StickerDB25
 PATH_TO_METADATA_DB25_VAR1 = r".\stickers\db25_var1\metadata.json"
 
 
-
 def db25var1_create_pdf_dxf(input_file, sign):
     with open(PATH_TO_METADATA_DB25_VAR1, "r") as file:
         metadata = json.load(file)
@@ -40,15 +39,14 @@ def db25var1_create_pdf_dxf(input_file, sign):
         stickers = []
         ind_s = 0
         for data in file.readlines():
-
             if data == "\n":
                 continue
 
             data = data.replace("\n", "").split(";")
 
-            # the data must match the labels in the metadata
-            if len(data) != len(template_stickers[ind_s].labels):
-                raise Exception("The data does not match the settings.")
+            # # the data must match the labels in the metadata
+            # if len(data) != len(template_stickers[ind_s].labels):
+            #     raise Exception("The data does not match the settings.")
 
             s = deepcopy(template_stickers[ind_s])
             s.initialize()
