@@ -10,17 +10,17 @@
       "labels":
       {
         "4": [
-          {"mm_x": 0, "mm_y": 24, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 21, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}],
+          {"mm_x": 0, "mm_y": 24, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 21, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 7, "font": "Arial"}],
         "6": [
-          {"mm_x": 0, "mm_y": 25.5, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 22.5, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 19.5, "align": "center", "size": 9, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 25.5, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 22.5, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 19.5, "align": "center", "size": 7, "font": "Arial"},
           {"mm_x": 0, "mm_y": 17, "align": "center", "size": 6, "font": "Arial"},
           {"mm_x": 0, "mm_y": 15, "align": "center", "size": 6, "font": "Arial"},
-          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}]
+          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 7, "font": "Arial"}]
       },
       "inverted": false
     },
@@ -31,17 +31,17 @@
       "mm_width": 46, "mm_height": 28,
       "labels": {
         "4": [
-          {"mm_x": 0, "mm_y": 24, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 21, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}],
+          {"mm_x": 0, "mm_y": 24, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 21, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 7, "font": "Arial"}],
         "6": [
-          {"mm_x": 0, "mm_y": 25.5, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 22.5, "align": "center", "size": 9, "font": "Arial"},
-          {"mm_x": 0, "mm_y": 19.5, "align": "center", "size": 9, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 25.5, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 22.5, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 19.5, "align": "center", "size": 7, "font": "Arial"},
           {"mm_x": 0, "mm_y": 17, "align": "center", "size": 6, "font": "Arial"},
           {"mm_x": 0, "mm_y": 15, "align": "center", "size": 6, "font": "Arial"},
-          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 9, "font": "Arial"}]
+          {"mm_x": 23, "mm_y": 11.5, "align": "left", "size": 7, "font": "Arial"}]
       },
       "inverted": true
     }
