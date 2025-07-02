@@ -179,4 +179,5 @@ cython_debug/
 !/mcs_StickerCreator/stickers/db25_var1/*
 !/mcs_StickerCreator/stickers/db25_var2/*
 
+
 !/mcs_ParserSMD/template.txt
