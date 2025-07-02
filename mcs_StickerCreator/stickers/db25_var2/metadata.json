@@ -7,12 +7,14 @@
       "lot": "./stickers/db25_var2/db25_var2_lot.svg",
       "dxf": "./stickers/db25_var2/db25_var2.dxf",
       "mm_width": 46, "mm_height": 22,
-      "labels": [
-        {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 15, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 12, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 3, "align": "center", "size": 7, "font": "Arial"}
-      ],
+      "labels": {
+        "4": [
+          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 15, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 12, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 3, "align": "center", "size": 7, "font": "Arial"}
+        ]
+      },
       "inverted": false
     },
     {
@@ -20,12 +22,14 @@
       "lot": "./stickers/db25_var2/db25_var2_lot_reverse.svg",
       "dxf": "./stickers/db25_var2/db25_var2_reverse.dxf",
       "mm_width": 46, "mm_height": 22,
-      "labels": [
-        {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 15, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 12, "align": "center", "size": 7, "font": "Arial"},
-        {"mm_x": 0, "mm_y": 3, "align": "center", "size": 7, "font": "Arial"}
-      ],
+       "labels": {
+        "4": [
+          {"mm_x": 0, "mm_y": 18, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 15, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 12, "align": "center", "size": 7, "font": "Arial"},
+          {"mm_x": 0, "mm_y": 3, "align": "center", "size": 7, "font": "Arial"}
+        ]
+      },
       "inverted": true
     }
   ]

@@ -4,9 +4,14 @@ import os
 from copy import deepcopy
 
 from reportlab.lib.units import mm
-from mcs_StickerCreator.constants import RADIUS_REF_POINT
-from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
-from mcs_StickerCreator.stickers.db25_var1.sticker import StickerDB25
+# from mcs_StickerCreator.constants import RADIUS_REF_POINT
+# from mcs_StickerCreator.stickers.create_pdf_dxf import create_pdf_dxf
+# from mcs_StickerCreator.stickers.db25_var1.sticker import StickerDB25
+
+from constants import RADIUS_REF_POINT
+from stickers.create_pdf_dxf import create_pdf_dxf
+from stickers.db25_var1.sticker import StickerDB25
+
 
 PATH_TO_METADATA_DB25_VAR1 = r".\stickers\db25_var1\metadata.json"
 

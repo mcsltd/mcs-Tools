@@ -111,9 +111,7 @@ class Maker:
             self.ok_btn["state"] = NORMAL
 
     def make_db25_create_pdf_dxf(self, name):
-
         try:
-
             if name == Maker.NAME_STICKERS[0]:
                 db25var1_create_pdf_dxf(self.input_file, self.selected_sign.get())
             elif name == Maker.NAME_STICKERS[2]:

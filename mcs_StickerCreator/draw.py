@@ -2,15 +2,18 @@ from ezdxf.layouts import Modelspace
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A3
 
+
 def draw_hline_ref_points(
         canvas: Canvas,
         x1_cen: float, x2_cen: float, y_cen: float,
         radius: float, skip: bool = False) -> None:
     if skip:
         return
-    canvas.setFillColorCMYK(0.07, 0.03, 0.0, 0.13)
-    canvas.circle(x_cen=x1_cen, y_cen=y_cen, r=radius, fill=1)
-    canvas.circle(x_cen=x2_cen, y_cen=y_cen, r=radius, fill=1)
+    canvas.setFillColorCMYK(0.02, 0.00, 0.02, 0.0)
+    # canvas.setFillColorCMYK(0.07, 0.03, 0.0, 0.13)
+    canvas.setLineWidth(0.5)
+    canvas.circle(x_cen=x1_cen, y_cen=y_cen, r=radius, fill=1, stroke=0)
+    canvas.circle(x_cen=x2_cen, y_cen=y_cen, r=radius, fill=1, stroke=0)
 
 
 def draw_hline_ref_points_dxf(

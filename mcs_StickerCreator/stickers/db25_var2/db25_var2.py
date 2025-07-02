@@ -52,9 +52,9 @@ def db25var2_create_pdf_dxf(input_file, sign):
 
             data = data.replace("\n", "").split(";")
 
-            # the data must match the labels in the metadata
-            if len(data) != len(template_stickers[ind_s].labels):
-                raise Exception("The data does not match the settings.")
+            # # the data must match the labels in the metadata
+            # if len(data) != len(template_stickers[ind_s].labels):
+            #     raise Exception("The data does not match the settings.")
 
             s = deepcopy(template_stickers[ind_s])
             s.initialize()
